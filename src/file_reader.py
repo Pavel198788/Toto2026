@@ -1,28 +1,28 @@
 def read_file(path):
     try:
-        f = open(path)
-        data = f.read()
-        f.close()
-        return data
-    except:
-        print("файл не найден")
-        return None
+        with open(path, encoding="utf-8") as f:
+            return f.read()
+    except FileNotFoundError:
+        raise FileNotFoundError(f"Файл не найден: {path}")
+    except PermissionError:
+        raise PermissionError(f"Нет доступа к файлу: {path}")
 
 
 def count_lines(path):
-    data = read_file(path)
-    if data == None:
-        print("не могу посчитать строки")
-        return
-    lines = data.split("\n")
-    print("Строк в файле: " + str(len(lines)))
+    try:
+        data = read_file(path)
+        lines = data.split("\n")
+        print(f"Строк в файле: {len(lines)}")
+    except (FileNotFoundError, PermissionError) as e:
+        print(f"Ошибка: {e}")
 
 
 def find_word(path, word):
-    data = read_file(path)
-    if data == None:
-        return
-    if word in data:
-        print("слово найдено")
-    else:
-        print("слово не найдено")
+    try:
+        data = read_file(path)
+        if word in data:
+            print(f"Слово '{word}' найдено")
+        else:
+            print(f"Слово '{word}' не найдено")
+    except (FileNotFoundError, PermissionError) as e:
+        print(f"Ошибка: {e}")
