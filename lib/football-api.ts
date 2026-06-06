@@ -7,6 +7,7 @@ interface FDTeam {
 }
 
 interface FDScore {
+  winner: "HOME_TEAM" | "AWAY_TEAM" | "DRAW" | null
   fullTime: { home: number | null; away: number | null }
 }
 

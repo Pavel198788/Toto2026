@@ -1,4 +1,5 @@
 // app/api/cron/sync-scores/route.ts
+import { timingSafeEqual } from "crypto"
 import { NextRequest, NextResponse } from "next/server"
 import type { Stage as PrismaStage, MatchStatus } from "@prisma/client"
 import { prisma } from "@/lib/db"
@@ -8,7 +9,12 @@ import type { Stage } from "@/lib/scoring"
 
 export async function GET(req: NextRequest) {
   const authHeader = req.headers.get("authorization")
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+  const expected = `Bearer ${process.env.CRON_SECRET ?? ""}`
+  const isValidSecret =
+    authHeader != null &&
+    authHeader.length === expected.length &&
+    timingSafeEqual(Buffer.from(authHeader), Buffer.from(expected))
+  if (!isValidSecret) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
 
@@ -23,6 +29,10 @@ export async function GET(req: NextRequest) {
     const homeScore = fdMatch.score.fullTime.home
     const awayScore = fdMatch.score.fullTime.away
 
+    let winner: string | null = null
+    if (fdMatch.score.winner === "HOME_TEAM") winner = fdMatch.homeTeam.name
+    else if (fdMatch.score.winner === "AWAY_TEAM") winner = fdMatch.awayTeam.name
+
     const match = await prisma.match.upsert({
       where: { externalId: fdMatch.id },
       create: {
@@ -35,6 +45,7 @@ export async function GET(req: NextRequest) {
         homeScore,
         awayScore,
         status: status as MatchStatus,
+        winner,
       },
       update: {
         homeScore,
@@ -42,6 +53,7 @@ export async function GET(req: NextRequest) {
         status: status as MatchStatus,
         homeTeam: fdMatch.homeTeam.name,
         awayTeam: fdMatch.awayTeam.name,
+        winner,
       },
     })
 

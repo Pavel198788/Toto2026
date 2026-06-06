@@ -9,10 +9,22 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
 
-  const { matchId, homeScore, awayScore, winner } = await req.json()
+  let body: { matchId?: unknown; homeScore?: unknown; awayScore?: unknown; winner?: unknown }
+  try {
+    body = await req.json()
+  } catch {
+    return NextResponse.json({ error: "Invalid JSON" }, { status: 400 })
+  }
+  const { matchId, homeScore, awayScore, winner } = body
 
-  if (matchId == null || homeScore == null || awayScore == null) {
+  if (matchId == null || typeof matchId !== "string" || homeScore == null || awayScore == null) {
     return NextResponse.json({ error: "Missing fields" }, { status: 400 })
+  }
+
+  const home = Number(homeScore)
+  const away = Number(awayScore)
+  if (!Number.isInteger(home) || !Number.isInteger(away) || home < 0 || away < 0) {
+    return NextResponse.json({ error: "Invalid scores" }, { status: 400 })
   }
 
   const match = await prisma.match.findUnique({ where: { id: matchId } })
@@ -28,9 +40,9 @@ export async function POST(req: NextRequest) {
       data: {
         userId: session.user.id,
         matchId,
-        homeScore: Number(homeScore),
-        awayScore: Number(awayScore),
-        winner: winner ?? null,
+        homeScore: home,
+        awayScore: away,
+        winner: winner != null ? String(winner) : null,
       },
     })
     return NextResponse.json(prediction, { status: 201 })
