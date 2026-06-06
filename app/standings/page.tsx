@@ -135,7 +135,7 @@ export default async function StandingsPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold">Групповой этап</h1>
+      <h1 className="text-[10px] font-black text-yellow-400 tracking-widest uppercase">Групповой этап</h1>
 
       {!started && (
         <p className="text-sm text-gray-500">
@@ -145,13 +145,13 @@ export default async function StandingsPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {groups.map(({ letter, teams }) => (
-          <div key={letter} className="bg-gray-900 border border-gray-800 rounded-lg overflow-hidden">
-            <div className="px-4 py-2 bg-gray-800/60 border-b border-gray-700">
-              <span className="font-semibold text-sm text-gray-200">Группа {letter}</span>
+          <div key={letter} className="bg-[#111] border border-[#1a1500] rounded-sm overflow-hidden">
+            <div className="px-4 py-2 bg-[#1a1500] border-b border-[#2a2000]">
+              <span className="text-[10px] font-black text-yellow-400 tracking-widest">ГРУППА {letter}</span>
             </div>
             <table className="w-full text-sm">
               <thead>
-                <tr className="text-gray-500 text-xs border-b border-gray-800">
+                <tr className="text-gray-700 text-[9px] border-b border-[#1a1500] tracking-widest">
                   <th className="py-2 px-3 w-6 text-left font-normal">#</th>
                   <th className="py-2 px-2 text-left font-normal">Команда</th>
                   <th className="py-2 px-3 text-center font-normal w-8">М</th>
@@ -169,8 +169,8 @@ export default async function StandingsPage() {
                     <tr
                       key={team.name}
                       className={[
-                        "border-b border-gray-800/40 last:border-0",
-                        advances ? "bg-green-900/10" : "",
+                        "border-b border-[#1a1500]/60 last:border-0",
+                        advances ? "bg-green-900/10 border-l-2 border-l-green-600/40" : "",
                       ].join(" ")}
                     >
                       <td className="py-2.5 px-3 text-gray-400 text-xs">{idx + 1}</td>

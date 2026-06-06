@@ -48,11 +48,11 @@ export default async function GridPage() {
 
   return (
     <div className="space-y-4">
-      <h1 className="text-2xl font-bold">Сетка прогнозов</h1>
-      <p className="text-sm text-gray-400">
+      <h1 className="text-[10px] font-black text-yellow-400 tracking-widest uppercase">Сетка прогнозов</h1>
+      <p className="text-xs text-gray-600">
         Чужие прогнозы скрыты до окончания матча
       </p>
-      <div className="bg-gray-900 border border-gray-800 rounded-lg p-4">
+      <div className="bg-[#111] border border-[#1a1500] rounded-sm p-4">
         <PredictionsGrid
           matches={gridData}
           participants={participants}
