@@ -42,3 +42,5 @@ next-env.d.ts
 
 # superpowers runtime artifacts
 .superpowers/
+
+/lib/generated/prisma
