@@ -1,8 +1,6 @@
 import Link from "next/link"
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/db"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
 import { MatchesTabs } from "@/components/matches-tabs"
 
 const STAGE_LABELS: Record<string, string> = {
@@ -105,7 +103,7 @@ export default async function MatchesPage({
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold">Расписание матчей</h1>
+      <h1 className="text-[10px] font-black text-yellow-400 tracking-widest uppercase">Расписание матчей</h1>
 
       <MatchesTabs tabs={tabs} activeTab={tab} />
 
@@ -117,7 +115,7 @@ export default async function MatchesPage({
 
       {byDate.map(({ dateKey, label, matches: dayMatches }) => (
         <section key={dateKey}>
-          <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-widest mb-3 border-b border-gray-800 pb-2 capitalize">
+          <h2 className="text-[9px] font-bold text-gray-600 uppercase tracking-widest mb-3 border-b border-[#1a1500] pb-2">
             {label}
           </h2>
 
@@ -141,15 +139,15 @@ export default async function MatchesPage({
               const pred = userPredictions[match.id]
 
               return (
-                <div key={match.id} className="py-3 flex items-center gap-3 hover:bg-gray-900/30 -mx-2 px-2 rounded transition-colors">
+                <div key={match.id} className="py-3 flex items-center gap-3 hover:bg-[#111]/60 -mx-2 px-2 rounded-sm transition-colors">
                   {/* Time */}
                   <span className="w-12 text-sm text-gray-500 shrink-0 font-mono">{timeStr}</span>
 
                   {/* Stage badge + city */}
                   <div className="hidden sm:flex flex-col items-start shrink-0 w-20 gap-0.5">
-                    <Badge variant="outline" className="text-xs border-gray-700 text-gray-400 w-full justify-center">
+                    <span className="text-[9px] border border-[#1a1500] text-gray-600 tracking-widest w-full justify-center flex rounded-sm px-1 py-0.5">
                       {stageLabel}
-                    </Badge>
+                    </span>
                     {match.city && (
                       <span className="text-xs text-gray-600 truncate w-full text-center">{match.city}</span>
                     )}
@@ -197,9 +195,9 @@ export default async function MatchesPage({
                     )}
                     {canPredict && session && (
                       <Link href={`/matches/${match.id}`}>
-                        <Button size="sm" variant="outline" className="h-7 text-xs px-2 border-yellow-700 text-yellow-500 hover:bg-yellow-900/20">
-                          Прогноз
-                        </Button>
+                        <button className="bg-[#1a1500] text-yellow-400 font-black tracking-widest px-3 py-1 rounded-sm text-[9px] hover:bg-yellow-400/10 transition-colors whitespace-nowrap">
+                          ПРОГНОЗ →
+                        </button>
                       </Link>
                     )}
                   </div>
