@@ -1,0 +1,12 @@
+{
+  "crons": [
+    {
+      "path": "/api/cron/sync-scores?mode=today",
+      "schedule": "*/2 * * * *"
+    },
+    {
+      "path": "/api/cron/sync-scores?mode=all",
+      "schedule": "0 3 * * *"
+    }
+  ]
+}
