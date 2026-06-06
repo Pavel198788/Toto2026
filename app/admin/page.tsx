@@ -71,6 +71,18 @@ export default function AdminPage() {
       </section>
 
       <section className="bg-gray-900 border border-gray-800 rounded-lg p-6 space-y-4">
+        <h2 className="text-lg font-semibold">Резервная копия</h2>
+        <p className="text-sm text-gray-400">
+          Скачать Excel-файл со всеми прогнозами участников (матчи + бонусы)
+        </p>
+        <a href="/api/admin/export" download>
+          <Button className="bg-green-700 hover:bg-green-600">
+            Скачать Excel
+          </Button>
+        </a>
+      </section>
+
+      <section className="bg-gray-900 border border-gray-800 rounded-lg p-6 space-y-4">
         <h2 className="text-lg font-semibold">Участники ({users.length})</h2>
         {loadError && (
           <p className="text-red-400 text-sm">{loadError}</p>
