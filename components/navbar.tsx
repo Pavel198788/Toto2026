@@ -1,66 +1,51 @@
 import Link from "next/link"
 import { auth, signOut } from "@/lib/auth"
+import { NavTabs } from "@/components/nav-tabs"
 
 export async function Navbar() {
   const session = await auth()
 
   return (
-    <nav className="border-b border-gray-800 bg-gray-900">
-      <div className="container mx-auto px-4 py-3 flex items-center justify-between">
-        <Link href="/" className="text-xl font-bold text-yellow-400 hover:text-yellow-300">
-          ⚽ Тото 2026
+    <nav className="bg-[#0a0a0a] border-b-2 border-[#1a1500]">
+      {/* Строка 1: Лого + пользователь */}
+      <div className="container mx-auto px-4 flex items-center justify-between h-11">
+        <Link
+          href="/"
+          className="text-sm font-black text-yellow-400 tracking-widest hover:text-yellow-300 transition-colors"
+        >
+          ⚽ ТОТО 2026
         </Link>
-        <div className="flex items-center gap-6 text-sm">
-          {session ? (
-            <>
-              <Link href="/matches" className="text-gray-300 hover:text-white transition-colors">
-                Матчи
-              </Link>
-              <Link href="/leaderboard" className="text-gray-300 hover:text-white transition-colors">
-                Рейтинг
-              </Link>
-              <Link href="/profile" className="text-gray-300 hover:text-white transition-colors">
-                Мои прогнозы
-              </Link>
-              <Link href="/standings" className="text-gray-300 hover:text-white transition-colors">
-                Группы
-              </Link>
-              <Link href="/grid" className="text-gray-300 hover:text-white transition-colors">
-                Сетка
-              </Link>
-              <Link href="/bonus" className="text-gray-300 hover:text-white transition-colors">
-                Бонус
-              </Link>
-              <Link href="/rules" className="text-gray-300 hover:text-white transition-colors">
-                Правила
-              </Link>
-              {session.user.isAdmin && (
-                <Link href="/admin" className="text-orange-400 hover:text-orange-300 transition-colors">
-                  Админ
-                </Link>
-              )}
-              <span className="text-gray-500">{session.user.name}</span>
-              <form
-                action={async () => {
-                  "use server"
-                  await signOut({ redirectTo: "/" })
-                }}
+        {session ? (
+          <div className="flex items-center gap-4">
+            <span className="text-[10px] text-gray-600 tracking-widest hidden sm:inline">
+              {session.user.name?.split(" ")[0].toUpperCase()}
+            </span>
+            <form
+              action={async () => {
+                "use server"
+                await signOut({ redirectTo: "/" })
+              }}
+            >
+              <button
+                type="submit"
+                className="text-[10px] text-gray-700 hover:text-gray-400 tracking-widest transition-colors"
               >
-                <button
-                  type="submit"
-                  className="text-gray-400 hover:text-white transition-colors"
-                >
-                  Выйти
-                </button>
-              </form>
-            </>
-          ) : (
-            <Link href="/auth/login" className="text-yellow-400 hover:text-yellow-300 font-medium">
-              Войти
-            </Link>
-          )}
-        </div>
+                ВЫЙТИ
+              </button>
+            </form>
+          </div>
+        ) : (
+          <Link
+            href="/auth/login"
+            className="text-[10px] text-yellow-400 font-bold tracking-widest hover:text-yellow-300 transition-colors"
+          >
+            ВОЙТИ
+          </Link>
+        )}
       </div>
+
+      {/* Строка 2: Скролл-вкладки (только залогиненным) */}
+      {session && <NavTabs isAdmin={session.user.isAdmin ?? false} />}
     </nav>
   )
 }

@@ -18,7 +18,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ru" className="dark">
-      <body className={`${inter.className} bg-gray-950 text-gray-100 min-h-screen`}>
+      <body className={`${inter.className} bg-[#0a0a0a] text-gray-100 min-h-screen overflow-x-hidden`}>
         <Providers>
           <Navbar />
           <main className="container mx-auto px-4 py-8 max-w-7xl">{children}</main>
