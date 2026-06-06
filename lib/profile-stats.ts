@@ -40,6 +40,7 @@ export function calcStreak(
   return streak
 }
 
+// Assumes groupMatches is sorted by kickoff asc — the order determines tour assignment.
 export function buildMatchTourMap(
   groupMatches: Array<{ id: string; group: string | null }>
 ): Record<string, string> {
@@ -64,7 +65,7 @@ export function calcPointsByStage(
 ): Record<string, number> {
   const result: Record<string, number> = {}
   for (const p of predictions) {
-    if (!p.points) continue
+    if (p.points == null) continue
     const key = p.match.stage === "GROUP"
       ? (matchTourMap[p.match.id] ?? "tour1")
       : p.match.stage
@@ -73,7 +74,7 @@ export function calcPointsByStage(
   return result
 }
 
-type CrossPrediction = {
+export type CrossPrediction = {
   userId: string
   matchId: string
   homeScore: number
