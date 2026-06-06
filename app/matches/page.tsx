@@ -139,6 +139,15 @@ export default async function MatchesPage({
               const canPredict = match.status === "SCHEDULED" && !(match.id in userPredictions)
               const pred = userPredictions[match.id]
 
+              const outcome = (h: number, a: number) => h > a ? "H" : h < a ? "A" : "D"
+              const predIcon = (isFinished && pred && match.homeScore != null && match.awayScore != null)
+                ? (match.homeScore === pred.homeScore && match.awayScore === pred.awayScore)
+                  ? "🎯"
+                  : outcome(match.homeScore, match.awayScore) === outcome(pred.homeScore, pred.awayScore)
+                  ? "🔥"
+                  : "💩"
+                : null
+
               return (
                 <div key={match.id} className="py-3 flex items-center gap-3 hover:bg-[#111]/60 -mx-2 px-2 rounded-sm transition-colors">
                   {/* Time + city (mobile) */}
@@ -168,7 +177,7 @@ export default async function MatchesPage({
 
                     <div className="shrink-0 w-14 text-center">
                       {isFinished || isLive ? (
-                        <span className={`font-bold text-2xl ${isLive ? "text-green-400" : "text-white"}`}>
+                        <span className={`font-bold text-lg ${isLive ? "text-green-400" : "text-white"}`}>
                           {match.homeScore ?? 0}:{match.awayScore ?? 0}
                         </span>
                       ) : (
@@ -190,10 +199,10 @@ export default async function MatchesPage({
                       </span>
                     )}
                     {isFinished && pred && (
-                      <span className="text-2xl font-black text-gray-400">
-                        {pred.homeScore}:{pred.awayScore}
+                      <span className={`text-lg font-black flex items-center gap-1 ${predIcon === "💩" ? "text-red-500" : "text-green-400"}`}>
+                        {predIcon} {pred.homeScore}:{pred.awayScore}
                         {pred.points != null && (
-                          <span className={`ml-1 ${pred.points > 0 ? "text-green-400" : "text-gray-600"}`}>
+                          <span className={`ml-1 text-sm ${pred.points > 0 ? "text-green-400" : "text-gray-600"}`}>
                             {pred.points > 0 ? `+${pred.points}` : pred.points}
                           </span>
                         )}
@@ -203,7 +212,7 @@ export default async function MatchesPage({
                       <span className="text-xs text-gray-600 hidden sm:inline">без прогноза</span>
                     )}
                     {!isFinished && !isLive && pred && (
-                      <span className="text-2xl font-black text-green-400">✓ {pred.homeScore}:{pred.awayScore}</span>
+                      <span className="text-lg font-black text-yellow-400">📝 {pred.homeScore}:{pred.awayScore}</span>
                     )}
                     {canPredict && session && (
                       <Link href={`/matches/${match.id}`}>
