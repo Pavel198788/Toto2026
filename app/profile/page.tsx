@@ -77,6 +77,7 @@ export default async function ProfilePage() {
   const exactCount = finished.filter(p => EXACT_POINTS.has(p.points ?? 0)).length
 
   const maxStagePoints = Math.max(...STAGE_ORDER.map(s => pointsByStage[s] ?? 0), 1)
+  const completionPercent = totalMatches > 0 ? Math.round(myPredictions.length / totalMatches * 100) : 0
   const initials = (session.user.name ?? "?").charAt(0).toUpperCase()
   const leaderTotal = rankedUsers[0]?.total ?? 1
 
@@ -120,11 +121,11 @@ export default async function ProfilePage() {
           <div className="bg-gray-700 rounded-full h-1.5">
             <div
               className="bg-yellow-500 h-1.5 rounded-full"
-              style={{ width: `${Math.min(100, Math.round(myPredictions.length / totalMatches * 100))}%` }}
+              style={{ width: `${Math.min(100, completionPercent)}%` }}
             />
           </div>
           <p className="text-xs text-gray-500 mt-1.5">
-            {Math.round(myPredictions.length / totalMatches * 100)}% заполнено
+            {completionPercent}% заполнено
           </p>
         </div>
       </div>
