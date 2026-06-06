@@ -61,7 +61,7 @@ export async function GET() {
   ]
   XLSX.utils.book_append_sheet(wb, ws1, "Прогнозы на матчи")
 
-  // Sheet 2: Bonus predictions
+  // Sheet 2: Bonus predictions raw
   const bonusRows = bonusPredictions.map((p) => ({
     Участник: p.user.name,
     Email: p.user.email,
@@ -73,6 +73,39 @@ export async function GET() {
   const ws2 = XLSX.utils.json_to_sheet(bonusRows)
   ws2["!cols"] = [{ wch: 20 }, { wch: 28 }, { wch: 16 }, { wch: 24 }, { wch: 8 }]
   XLSX.utils.book_append_sheet(wb, ws2, "Бонусные прогнозы")
+
+  // Sheet 3: Bonus summary — one row per participant
+  const users = await prisma.user.findMany({
+    where: { isAdmin: false },
+    include: { bonusPredictions: true },
+    orderBy: { name: "asc" },
+  })
+
+  const summaryRows = users.map((u) => {
+    const semis = u.bonusPredictions.filter((b) => b.type === "SEMIFINAL").map((b) => b.team)
+    const finalists = u.bonusPredictions.filter((b) => b.type === "FINALIST").map((b) => b.team)
+    const champion = u.bonusPredictions.find((b) => b.type === "CHAMPION")
+    const bonusPts = u.bonusPredictions.reduce((s, b) => s + (b.points ?? 0), 0)
+    return {
+      Участник: u.name,
+      Email: u.email,
+      "Полуфиналист 1": semis[0] ?? "—",
+      "Полуфиналист 2": semis[1] ?? "—",
+      "Полуфиналист 3": semis[2] ?? "—",
+      "Полуфиналист 4": semis[3] ?? "—",
+      "Финалист 1": finalists[0] ?? "—",
+      "Финалист 2": finalists[1] ?? "—",
+      Чемпион: champion?.team ?? "—",
+      "Бонусных очков": bonusPts || "—",
+    }
+  })
+
+  const ws3 = XLSX.utils.json_to_sheet(summaryRows)
+  ws3["!cols"] = [
+    { wch: 20 }, { wch: 28 }, { wch: 18 }, { wch: 18 },
+    { wch: 18 }, { wch: 18 }, { wch: 18 }, { wch: 18 }, { wch: 18 }, { wch: 16 },
+  ]
+  XLSX.utils.book_append_sheet(wb, ws3, "Бонусы по участникам")
 
   const buffer = XLSX.write(wb, { type: "buffer", bookType: "xlsx" })
   const date = new Date().toISOString().slice(0, 10)
