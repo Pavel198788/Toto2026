@@ -4,6 +4,8 @@ import Credentials from "next-auth/providers/credentials"
 import bcrypt from "bcryptjs"
 import { prisma } from "@/lib/db"
 
+const DUMMY_HASH = "$2b$12$Qh27Dx80Nrv0vnPY5IrPcuR6LQjVXqmqb0ehTu699fGV3uOnfed02"
+
 export const { handlers, auth, signIn, signOut } = NextAuth({
   providers: [
     Credentials({
@@ -17,13 +19,15 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         const user = await prisma.user.findUnique({
           where: { email: credentials.email as string },
         })
-        if (!user) return null
 
+        // Always run bcrypt to prevent email enumeration via timing
+        const hashToCompare = user?.password ?? DUMMY_HASH
         const valid = await bcrypt.compare(
           credentials.password as string,
-          user.password
+          hashToCompare
         )
-        if (!valid) return null
+
+        if (!user || !valid) return null
 
         return { id: user.id, name: user.name, email: user.email, isAdmin: user.isAdmin }
       },
