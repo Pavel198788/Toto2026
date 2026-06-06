@@ -3,10 +3,6 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 
 export default function RegisterPage() {
   const router = useRouter()
@@ -20,82 +16,90 @@ export default function RegisterPage() {
     e.preventDefault()
     setLoading(true)
     setError("")
-
-    const res = await fetch("/api/auth/register", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, email, password }),
-    })
-
-    setLoading(false)
-
-    if (!res.ok) {
-      const data = await res.json()
-      setError(data.error ?? "Ошибка регистрации")
-    } else {
-      router.push("/auth/login")
+    try {
+      const res = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, password }),
+      })
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}))
+        setError(data.error ?? "Ошибка регистрации")
+      } else {
+        router.push("/auth/login")
+      }
+    } catch {
+      setError("Ошибка сети")
+    } finally {
+      setLoading(false)
     }
   }
 
   return (
     <div className="flex items-center justify-center min-h-[70vh]">
-      <Card className="w-full max-w-md bg-gray-900 border-gray-800">
-        <CardHeader>
-          <CardTitle className="text-2xl text-center">⚽ Тото 2026</CardTitle>
-          <CardDescription className="text-center text-gray-400">
-            Регистрация
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
+      <div className="w-full max-w-md">
+        <div className="text-center mb-8">
+          <h1 className="text-4xl font-black text-yellow-400 tracking-wide mb-2">ПРИВЕТ, БРО!</h1>
+          <p className="text-sm text-gray-500">Регистрируйся, делай пароль и погнали!</p>
+        </div>
+        <div
+          className="bg-[#111] border border-[#1a1500] rounded-sm p-6"
+          style={{ borderTop: "2px solid #facc15" }}
+        >
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="name">Имя</Label>
-              <Input
+            <div className="space-y-1.5">
+              <label htmlFor="name" className="text-[9px] text-yellow-400 tracking-widest uppercase">Имя</label>
+              <input
                 id="name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Иван Иванов"
                 required
-                className="bg-gray-800 border-gray-700"
+                className="w-full bg-[#0d0d0d] border border-[#1a1500] rounded-sm px-3 py-2.5 text-sm text-gray-300 placeholder-gray-700 focus:outline-none focus:border-yellow-400/50 transition-colors"
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
+            <div className="space-y-1.5">
+              <label htmlFor="email" className="text-[9px] text-yellow-400 tracking-widest uppercase">Email</label>
+              <input
                 id="email"
                 type="email"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => setEmail(e.target.value.trim())}
                 placeholder="ivan@example.com"
                 required
-                className="bg-gray-800 border-gray-700"
+                className="w-full bg-[#0d0d0d] border border-[#1a1500] rounded-sm px-3 py-2.5 text-sm text-gray-300 placeholder-gray-700 focus:outline-none focus:border-yellow-400/50 transition-colors"
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">Пароль</Label>
-              <Input
+            <div className="space-y-1.5">
+              <label htmlFor="password" className="text-[9px] text-yellow-400 tracking-widest uppercase">Пароль</label>
+              <input
                 id="password"
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 minLength={6}
-                className="bg-gray-800 border-gray-700"
+                autoComplete="new-password"
+                className="w-full bg-[#0d0d0d] border border-[#1a1500] rounded-sm px-3 py-2.5 text-sm text-gray-300 placeholder-gray-700 focus:outline-none focus:border-yellow-400/50 transition-colors"
               />
             </div>
             {error && <p className="text-red-400 text-sm">{error}</p>}
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? "Регистрация..." : "Зарегистрироваться"}
-            </Button>
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-yellow-400 text-black font-black tracking-widest py-3 rounded-sm text-xs hover:bg-yellow-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {loading ? "РЕГИСТРАЦИЯ..." : "ПОГНАЛИ →"}
+            </button>
           </form>
-          <p className="text-center text-sm text-gray-400 mt-4">
+          <p className="text-center text-xs text-gray-600 mt-5">
             Уже есть аккаунт?{" "}
-            <Link href="/auth/login" className="text-yellow-400 hover:underline">
+            <Link href="/auth/login" className="text-yellow-400 hover:text-yellow-300 transition-colors">
               Войти
             </Link>
           </p>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   )
 }
