@@ -2,7 +2,6 @@ import Link from "next/link"
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/db"
 import { MatchCard } from "@/components/match-card"
-import { Button } from "@/components/ui/button"
 
 export default async function HomePage() {
   const session = await auth()
@@ -33,19 +32,19 @@ export default async function HomePage() {
   return (
     <div className="space-y-8">
       <section className="text-center py-8">
-        <h1 className="text-4xl font-bold text-yellow-400 mb-2">⚽ Тото 2026</h1>
-        <p className="text-gray-400 text-lg">Футбольный тотализатор Чемпионата мира 2026</p>
+        <h1 className="text-4xl font-black text-yellow-400 tracking-wide mb-2">ТОТО 2026</h1>
+        <p className="text-gray-600 text-sm tracking-wide">Футбольный тотализатор Чемпионата мира 2026</p>
         {!session && (
-          <div className="mt-6 flex gap-4 justify-center">
+          <div className="mt-6 flex gap-3 justify-center">
             <Link href="/auth/login">
-              <Button className="bg-yellow-500 hover:bg-yellow-400 text-black font-bold">
-                Войти
-              </Button>
+              <button className="bg-yellow-400 text-black font-black tracking-widest px-6 py-2.5 rounded-sm text-xs hover:bg-yellow-300 transition-colors">
+                ВОЙТИ →
+              </button>
             </Link>
             <Link href="/auth/register">
-              <Button variant="outline" className="border-gray-600">
-                Зарегистрироваться
-              </Button>
+              <button className="border border-[#1a1500] text-yellow-400 font-bold tracking-widest px-6 py-2.5 rounded-sm text-xs hover:border-yellow-400/30 transition-colors">
+                РЕГИСТРАЦИЯ
+              </button>
             </Link>
           </div>
         )}
@@ -53,8 +52,10 @@ export default async function HomePage() {
 
       {upcomingMatches.length > 0 && (
         <section>
-          <h2 className="text-xl font-semibold mb-4 text-gray-200">Ближайшие матчи</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <h2 className="text-[10px] font-bold text-yellow-400 tracking-widest uppercase mb-4">
+            Ближайшие матчи
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
             {upcomingMatches.map((match) => (
               <MatchCard
                 key={match.id}
@@ -67,12 +68,16 @@ export default async function HomePage() {
       )}
 
       {session && (
-        <div className="flex gap-4 justify-center pt-4">
+        <div className="flex gap-3 justify-center pt-4">
           <Link href="/matches">
-            <Button variant="outline" className="border-gray-700">Все матчи</Button>
+            <button className="border border-[#1a1500] text-gray-600 tracking-widest px-6 py-2 rounded-sm text-[10px] hover:text-gray-400 hover:border-gray-700 transition-colors">
+              ВСЕ МАТЧИ
+            </button>
           </Link>
           <Link href="/leaderboard">
-            <Button variant="outline" className="border-gray-700">Рейтинг</Button>
+            <button className="border border-[#1a1500] text-gray-600 tracking-widest px-6 py-2 rounded-sm text-[10px] hover:text-gray-400 hover:border-gray-700 transition-colors">
+              РЕЙТИНГ
+            </button>
           </Link>
         </div>
       )}

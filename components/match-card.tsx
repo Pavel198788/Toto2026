@@ -1,6 +1,4 @@
 import Link from "next/link"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
 
 interface MatchCardProps {
   match: {
@@ -29,38 +27,31 @@ const STAGE_LABELS: Record<string, string> = {
   FINAL: "Финал",
 }
 
-const STATUS_COLORS: Record<string, string> = {
-  SCHEDULED: "bg-gray-700",
-  IN_PLAY: "bg-green-700 animate-pulse",
-  PAUSED: "bg-yellow-700",
-  FINISHED: "bg-gray-800",
-  POSTPONED: "bg-red-900",
-}
-
 export function MatchCard({ match, hasPrediction, prediction }: MatchCardProps) {
   const kickoff = new Date(match.kickoff)
   const groupLetter = match.group?.replace(/^GROUP_/, "") ?? ""
-  const stageLabel = match.stage === "GROUP" && groupLetter
-    ? `Группа ${groupLetter}`
-    : STAGE_LABELS[match.stage] ?? match.stage
+  const stageLabel =
+    match.stage === "GROUP" && groupLetter
+      ? `Группа ${groupLetter}`
+      : STAGE_LABELS[match.stage] ?? match.stage
 
   const isFinished = match.status === "FINISHED"
   const isLive = match.status === "IN_PLAY" || match.status === "PAUSED"
   const canPredict = match.status === "SCHEDULED" && !hasPrediction
 
   return (
-    <div className="bg-gray-900 border border-gray-800 rounded-lg p-4 hover:border-gray-700 transition-colors">
+    <div className="bg-[#111] border border-[#1a1500] rounded-sm p-4 hover:border-yellow-400/20 transition-colors">
       <div className="flex items-center justify-between mb-3">
-        <Badge variant="outline" className="text-xs text-gray-400 border-gray-700">
+        <span className="text-[9px] text-gray-600 tracking-widest uppercase border border-[#1a1500] px-2 py-0.5 rounded-sm">
           {stageLabel}
-        </Badge>
+        </span>
         <div className="text-right">
-          <div className="text-xs text-gray-500">
+          <div className="text-[10px] text-gray-600">
             {kickoff.toLocaleDateString("ru-RU", { day: "numeric", month: "short" })}{" "}
             {kickoff.toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" })}
           </div>
           {(match.city || match.country) && (
-            <div className="text-xs text-gray-600 mt-0.5">
+            <div className="text-[9px] text-gray-700 mt-0.5">
               {[match.city, match.country].filter(Boolean).join(", ")}
             </div>
           )}
@@ -68,46 +59,44 @@ export function MatchCard({ match, hasPrediction, prediction }: MatchCardProps) 
       </div>
 
       <div className="flex items-center justify-between gap-4">
-        <span className="font-semibold text-sm flex-1">{match.homeTeam}</span>
-
-        <div className={`px-3 py-1 rounded text-center min-w-[60px] ${STATUS_COLORS[match.status]}`}>
+        <span className="font-bold text-sm flex-1 text-gray-200">{match.homeTeam}</span>
+        <div className="shrink-0 min-w-[52px] text-center">
           {isFinished || isLive ? (
-            <span className="font-bold text-lg">
+            <span className={`font-black text-xl ${isLive ? "text-green-400 animate-pulse" : "text-yellow-400"}`}>
               {match.homeScore ?? 0}:{match.awayScore ?? 0}
             </span>
           ) : (
-            <span className="text-gray-400 text-sm">vs</span>
+            <span className="text-gray-700 font-bold">—</span>
           )}
         </div>
-
-        <span className="font-semibold text-sm flex-1 text-right">{match.awayTeam}</span>
+        <span className="font-bold text-sm flex-1 text-right text-gray-200">{match.awayTeam}</span>
       </div>
 
       {prediction && (
-        <div className="mt-3 pt-3 border-t border-gray-800 flex items-center justify-between text-sm">
-          <span className="text-gray-400">
-            Мой прогноз: <span className="text-white font-medium">{prediction.homeScore}:{prediction.awayScore}</span>
+        <div className="mt-3 pt-3 border-t border-[#1a1500] flex items-center justify-between">
+          <span className="text-[10px] text-gray-600">
+            Мой прогноз: <span className="text-gray-300 font-bold">{prediction.homeScore}:{prediction.awayScore}</span>
           </span>
           {prediction.points != null && (
-            <Badge className={prediction.points > 0 ? "bg-green-800 text-green-200" : "bg-gray-800 text-gray-400"}>
-              {prediction.points > 0 ? `+${prediction.points}` : prediction.points}
-            </Badge>
+            <span className={`text-xs font-black ${prediction.points > 0 ? "text-green-400" : "text-gray-600"}`}>
+              {prediction.points > 0 ? `+${prediction.points}` : "0"}
+            </span>
           )}
         </div>
       )}
 
       {hasPrediction && !prediction && (
-        <div className="mt-3 pt-3 border-t border-gray-800">
-          <span className="text-green-400 text-sm">✓ Прогноз сдан</span>
+        <div className="mt-3 pt-3 border-t border-[#1a1500]">
+          <span className="text-[10px] text-green-500">✓ Прогноз сдан</span>
         </div>
       )}
 
       {canPredict && (
-        <div className="mt-3 pt-3 border-t border-gray-800">
+        <div className="mt-3 pt-3 border-t border-[#1a1500]">
           <Link href={`/matches/${match.id}`}>
-            <Button size="sm" variant="outline" className="w-full border-yellow-600 text-yellow-400 hover:bg-yellow-900/20">
-              Сделать прогноз
-            </Button>
+            <button className="w-full bg-[#1a1500] text-yellow-400 font-black tracking-widest py-1.5 rounded-sm text-[9px] hover:bg-yellow-400/10 transition-colors">
+              ПРОГНОЗ →
+            </button>
           </Link>
         </div>
       )}
