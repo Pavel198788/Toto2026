@@ -1,12 +1,13 @@
-// lib/auth.ts
 import NextAuth from "next-auth"
 import Credentials from "next-auth/providers/credentials"
 import bcrypt from "bcryptjs"
 import { prisma } from "@/lib/db"
+import { authConfig } from "@/lib/auth.config"
 
 const DUMMY_HASH = "$2b$12$Qh27Dx80Nrv0vnPY5IrPcuR6LQjVXqmqb0ehTu699fGV3uOnfed02"
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
+  ...authConfig,
   providers: [
     Credentials({
       credentials: {
@@ -20,7 +21,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           where: { email: credentials.email as string },
         })
 
-        // Always run bcrypt to prevent email enumeration via timing
         const hashToCompare = user?.password ?? DUMMY_HASH
         const valid = await bcrypt.compare(
           credentials.password as string,
@@ -33,24 +33,4 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       },
     }),
   ],
-  session: { strategy: "jwt" },
-  callbacks: {
-    async jwt({ token, user }) {
-      if (user) {
-        token.id = user.id
-        token.isAdmin = (user as { isAdmin: boolean }).isAdmin
-      }
-      return token
-    },
-    async session({ session, token }) {
-      if (session.user) {
-        session.user.id = token.id as string
-        session.user.isAdmin = token.isAdmin as boolean
-      }
-      return session
-    },
-  },
-  pages: {
-    signIn: "/auth/login",
-  },
 })

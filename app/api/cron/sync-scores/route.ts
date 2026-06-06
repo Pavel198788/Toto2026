@@ -24,6 +24,9 @@ export async function GET(req: NextRequest) {
   let updatedMatches = 0
 
   for (const fdMatch of fdMatches) {
+    // Skip matches where teams aren't determined yet (knockout TBD slots)
+    if (!fdMatch.homeTeam?.name || !fdMatch.awayTeam?.name) continue
+
     const stage = mapStage(fdMatch.stage)
     const status = mapStatus(fdMatch.status)
     const homeScore = fdMatch.score.fullTime.home
