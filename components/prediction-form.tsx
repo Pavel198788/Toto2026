@@ -25,6 +25,12 @@ export function PredictionForm({ matchId, homeTeam, awayTeam, isPlayoff }: Predi
   const router = useRouter()
   const [homeScore, setHomeScore] = useState("")
   const [awayScore, setAwayScore] = useState("")
+
+  function handleScoreChange(val: string, setter: (v: string) => void) {
+    const digits = val.replace(/\D/g, "")
+    if (digits === "") { setter(""); return }
+    setter(String(parseInt(digits, 10)))
+  }
   const [winner, setWinner] = useState("")
   const [showConfirm, setShowConfirm] = useState(false)
   const [submitting, setSubmitting] = useState(false)
@@ -73,11 +79,10 @@ export function PredictionForm({ matchId, homeTeam, awayTeam, isPlayoff }: Predi
           <div className="text-center">
             <p className="text-sm text-gray-400 mb-2">{homeTeam}</p>
             <Input
-              type="number"
-              min="0"
-              max="30"
+              type="text"
+              inputMode="numeric"
               value={homeScore}
-              onChange={(e) => setHomeScore(e.target.value)}
+              onChange={(e) => handleScoreChange(e.target.value, setHomeScore)}
               className="w-20 text-center text-2xl font-bold bg-gray-800 border-gray-700 h-14"
               required
             />
@@ -86,11 +91,10 @@ export function PredictionForm({ matchId, homeTeam, awayTeam, isPlayoff }: Predi
           <div className="text-center">
             <p className="text-sm text-gray-400 mb-2">{awayTeam}</p>
             <Input
-              type="number"
-              min="0"
-              max="30"
+              type="text"
+              inputMode="numeric"
               value={awayScore}
-              onChange={(e) => setAwayScore(e.target.value)}
+              onChange={(e) => handleScoreChange(e.target.value, setAwayScore)}
               className="w-20 text-center text-2xl font-bold bg-gray-800 border-gray-700 h-14"
               required
             />
