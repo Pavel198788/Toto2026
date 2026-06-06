@@ -1,7 +1,6 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { Button } from "@/components/ui/button"
 import { teamFlag } from "@/lib/flags"
 import { computeBonusPoints } from "@/lib/bonus-utils"
 
@@ -127,20 +126,20 @@ export default function BonusPage() {
   return (
     <div className="max-w-4xl mx-auto space-y-8">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Бонусные прогнозы</h1>
+        <h1 className="text-[10px] font-black text-yellow-400 tracking-widest uppercase">Бонусные прогнозы</h1>
         {locked && (
-          <span className="text-sm bg-red-900/40 border border-red-800 text-red-400 px-3 py-1 rounded-full">
+          <span className="text-[9px] bg-red-900/30 border border-red-900 text-red-500 px-3 py-1 rounded-sm tracking-widest">
             Приём закрыт — ЧМ начался
           </span>
         )}
         {!locked && (
-          <span className="text-sm bg-yellow-900/40 border border-yellow-800 text-yellow-400 px-3 py-1 rounded-full">
+          <span className="text-[9px] bg-[#1a1500] border border-[#2a2000] text-yellow-400 px-3 py-1 rounded-sm tracking-widest">
             До начала первого матча
           </span>
         )}
       </div>
 
-      <div className="bg-gray-900/50 border border-gray-800 rounded-lg p-4 space-y-2 text-sm text-gray-400">
+      <div className="bg-[#111] border border-[#1a1500] rounded-sm p-4 space-y-2 text-xs text-gray-500">
         <p>
           Помимо прогнозов на отдельные матчи, вы можете угадать, какие команды далеко пройдут в турнире — и получить за это дополнительные очки:
         </p>
@@ -162,9 +161,9 @@ export default function BonusPage() {
       )}
 
       {/* СЕКЦИЯ 1: Полуфиналисты */}
-      <section className="bg-gray-900 border border-gray-800 rounded-lg p-6 space-y-4">
+      <section className="bg-[#111] border border-[#1a1500] rounded-sm p-5 space-y-4" style={{ borderTop: "2px solid #facc15" }}>
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-yellow-400">Полуфиналисты</h2>
+          <h2 className="text-[10px] font-black text-yellow-400 tracking-widest uppercase">Полуфиналисты</h2>
           <span className="text-sm text-gray-400">
             {semifinalists.length} / 4
           </span>
@@ -181,14 +180,14 @@ export default function BonusPage() {
                 onClick={() => toggleSemifinalist(team)}
                 disabled={locked || (!selected && semifinalists.length >= 4)}
                 className={[
-                  "px-3 py-1.5 rounded-full text-sm font-medium transition-all border",
+                  "px-3 py-1.5 rounded-sm text-[10px] font-black tracking-wide transition-all border",
                   selected && isCorrect
                     ? "bg-green-600 border-green-500 text-white"
                     : selected && isWrong
                     ? "bg-red-700 border-red-600 text-white"
                     : selected
-                    ? "bg-yellow-500 border-yellow-400 text-black"
-                    : "bg-gray-800 border-gray-700 text-gray-300 hover:border-gray-500",
+                    ? "bg-yellow-400 border-yellow-400 text-black"
+                    : "bg-[#0d0d0d] border-[#1a1500] text-gray-600 hover:border-gray-700",
                   locked || (!selected && semifinalists.length >= 4)
                     ? "opacity-50 cursor-not-allowed"
                     : "cursor-pointer",
@@ -202,9 +201,9 @@ export default function BonusPage() {
       </section>
 
       {/* СЕКЦИЯ 2: Финалисты */}
-      <section className={`bg-gray-900 border rounded-lg p-6 space-y-4 transition-opacity ${semifinalists.length < 4 ? "opacity-40 border-gray-800" : "border-gray-700"}`}>
+      <section className={`bg-[#111] border rounded-sm p-5 space-y-4 transition-opacity ${semifinalists.length < 4 ? "opacity-40 border-[#1a1500]" : "border-[#2a2000]"}`} style={{ borderTop: "2px solid #facc15" }}>
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-yellow-400">Финалисты</h2>
+          <h2 className="text-[10px] font-black text-yellow-400 tracking-widest uppercase">Финалисты</h2>
           <span className="text-sm text-gray-400">
             {finalists.length} / 2
           </span>
@@ -224,14 +223,14 @@ export default function BonusPage() {
                   onClick={() => toggleFinalist(team)}
                   disabled={locked || (!selected && finalists.length >= 2)}
                   className={[
-                    "px-4 py-2 rounded-lg text-sm font-medium transition-all border",
+                    "px-4 py-2 rounded-sm text-[10px] font-black tracking-wide transition-all border",
                     selected && isCorrect
                       ? "bg-green-600 border-green-500 text-white"
                       : selected && isWrong
                       ? "bg-red-700 border-red-600 text-white"
                       : selected
-                      ? "bg-yellow-500 border-yellow-400 text-black"
-                      : "bg-gray-800 border-gray-700 text-gray-300 hover:border-gray-500",
+                      ? "bg-yellow-400 border-yellow-400 text-black"
+                      : "bg-[#0d0d0d] border-[#1a1500] text-gray-600 hover:border-gray-700",
                     locked || (!selected && finalists.length >= 2)
                       ? "opacity-50 cursor-not-allowed"
                       : "cursor-pointer",
@@ -246,8 +245,8 @@ export default function BonusPage() {
       </section>
 
       {/* СЕКЦИЯ 3: Чемпион */}
-      <section className={`bg-gray-900 border rounded-lg p-6 space-y-4 transition-opacity ${finalists.length < 2 ? "opacity-40 border-gray-800" : "border-gray-700"}`}>
-        <h2 className="text-lg font-semibold text-yellow-400">Чемпион</h2>
+      <section className={`bg-[#111] border rounded-sm p-5 space-y-4 transition-opacity ${finalists.length < 2 ? "opacity-40 border-[#1a1500]" : "border-[#2a2000]"}`} style={{ borderTop: "2px solid #facc15" }}>
+        <h2 className="text-[10px] font-black text-yellow-400 tracking-widest uppercase">Чемпион</h2>
         <p className="text-sm text-gray-400">Выберите победителя турнира</p>
         {finalists.length < 2 ? (
           <p className="text-xs text-gray-500 italic">Сначала выберите 2 финалиста</p>
@@ -263,14 +262,14 @@ export default function BonusPage() {
                   onClick={() => selectChampion(team)}
                   disabled={locked}
                   className={[
-                    "px-6 py-3 rounded-xl text-base font-bold transition-all border-2",
+                    "px-6 py-3 rounded-sm text-[10px] font-black tracking-wide transition-all border-2",
                     selected && isCorrect
                       ? "bg-green-600 border-green-400 text-white scale-105"
                       : selected && isWrong
                       ? "bg-red-700 border-red-500 text-white"
                       : selected
-                      ? "bg-yellow-500 border-yellow-300 text-black scale-105"
-                      : "bg-gray-800 border-gray-700 text-gray-300 hover:border-gray-500",
+                      ? "bg-yellow-400 border-yellow-300 text-black scale-105"
+                      : "bg-[#0d0d0d] border-[#1a1500] text-gray-600 hover:border-gray-700",
                     locked ? "cursor-not-allowed" : "cursor-pointer",
                   ].join(" ")}
                 >
@@ -284,19 +283,19 @@ export default function BonusPage() {
 
       {/* ИТОГОВАЯ СТРОКА */}
       {champion && (
-        <div className="bg-yellow-900/20 border border-yellow-800 rounded-lg p-4 flex items-center justify-between">
+        <div className="bg-[#1a1500] border border-[#2a2000] rounded-sm p-4 flex items-center justify-between">
           <div className="space-y-1">
             <p className="text-xs text-gray-400 uppercase tracking-wider">Ваш чемпион</p>
             <p className="text-xl font-bold text-yellow-400">🏆 {champion}</p>
           </div>
           {!locked && !alreadySaved && (
-            <Button
+            <button
               onClick={handleSave}
               disabled={saving || !isComplete}
-              className="bg-yellow-600 hover:bg-yellow-500 text-black font-bold px-6"
+              className="bg-yellow-400 text-black font-black tracking-widest px-6 py-2 rounded-sm text-[10px] hover:bg-yellow-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {saving ? "Сохраняю..." : "Сохранить прогноз"}
-            </Button>
+              {saving ? "СОХРАНЯЮ..." : "СОХРАНИТЬ →"}
+            </button>
           )}
           {alreadySaved && (
             <span className="text-green-400 font-medium text-sm">✓ Прогноз сохранён</span>
