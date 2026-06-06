@@ -46,9 +46,41 @@ export default async function LeaderboardPage() {
     })
     .sort((a, b) => b.total - a.total || b.exactCount - a.exactCount)
 
+  const totalPrize = users.length * 10000
+  const fmt = (n: number) => n.toLocaleString("ru-RU") + " ₽"
+
   return (
     <div className="space-y-6">
       <h1 className="text-[10px] font-black text-yellow-400 tracking-widest uppercase">Рейтинг участников</h1>
+
+      {/* Призовой фонд — золотой слиток */}
+      <div className="bg-[#0e0b00] border border-[#3a2a00] rounded-sm overflow-hidden">
+        {/* Шапка */}
+        <div className="relative bg-gradient-to-br from-[#1a1200] via-[#2a1e00] to-[#1a1200] px-5 py-5 text-center border-b border-[#3a2a00]">
+          <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-yellow-400/60 to-transparent" />
+          <p className="text-[9px] tracking-[4px] text-[#7a6000] uppercase mb-2">Призовой фонд · ЧМ-2026</p>
+          <p className="text-4xl font-black text-yellow-400 tracking-tight" style={{ textShadow: "0 0 40px rgba(250,204,21,0.3)" }}>{fmt(totalPrize)}</p>
+          <p className="text-[9px] tracking-[2px] text-[#5a4500] mt-1">{users.length} участников × 10 000 ₽</p>
+        </div>
+
+        {/* Строки */}
+        {[
+          { medal: "🥇", label: "1 место", pct: 0.55, color: "text-yellow-400", sub: "text-[#4a3800]" },
+          { medal: "🥈", label: "2 место", pct: 0.25, color: "text-[#c0b040]", sub: "text-[#3a2e00]" },
+          { medal: "🥉", label: "3 место", pct: 0.10, color: "text-[#a09020]", sub: "text-[#3a2a00]" },
+          { medal: "🎯", label: "Лучший в плей-офф", pct: 0.10, color: "text-green-400", sub: "text-[#2a3a2a]" },
+        ].map(({ medal, label, pct, color, sub }) => (
+          <div key={label} className="flex items-center gap-3 px-5 py-3 border-b border-[#1a1200] last:border-b-0">
+            <span className="text-lg w-7 flex-shrink-0">{medal}</span>
+            <div className="flex-1">
+              <p className="text-[10px] text-[#a08000] tracking-wide">{label}</p>
+              <p className={`text-[9px] tracking-wide ${sub}`}>{Math.round(pct * 100)}% от фонда</p>
+            </div>
+            <span className={`text-[15px] font-black ${color}`}>{fmt(Math.round(totalPrize * pct))}</span>
+          </div>
+        ))}
+      </div>
+
       <div className="bg-[#111] border border-[#1a1500] rounded-sm p-6">
         {entries.length === 0 ? (
           <p className="text-center text-gray-500 py-8">Данных пока нет</p>
