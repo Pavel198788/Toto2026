@@ -1,0 +1,147 @@
+<h2>Тото 2026 — Дизайн-спек</h2>
+<p class="subtitle">Итоговый документ для проверки перед реализацией</p>
+
+<div style="display:flex;flex-direction:column;gap:16px;margin-top:8px">
+
+  <!-- Стек -->
+  <div style="background:#1e293b;border-radius:10px;padding:16px">
+    <div style="color:#f59e0b;font-size:11px;font-weight:700;letter-spacing:1px;margin-bottom:10px">СТЕК</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+      <div style="background:#0f172a;border-radius:6px;padding:10px">
+        <div style="color:#94a3b8;font-size:10px">Фреймворк</div>
+        <div style="color:#f1f5f9;font-size:13px;font-weight:600">Next.js 14 + TypeScript</div>
+      </div>
+      <div style="background:#0f172a;border-radius:6px;padding:10px">
+        <div style="color:#94a3b8;font-size:10px">База данных</div>
+        <div style="color:#f1f5f9;font-size:13px;font-weight:600">PostgreSQL + Prisma</div>
+      </div>
+      <div style="background:#0f172a;border-radius:6px;padding:10px">
+        <div style="color:#94a3b8;font-size:10px">Авторизация</div>
+        <div style="color:#f1f5f9;font-size:13px;font-weight:600">NextAuth.js (email+пароль)</div>
+      </div>
+      <div style="background:#0f172a;border-radius:6px;padding:10px">
+        <div style="color:#94a3b8;font-size:10px">UI</div>
+        <div style="color:#f1f5f9;font-size:13px;font-weight:600">Tailwind + shadcn/ui · Тёмная тема</div>
+      </div>
+      <div style="background:#0f172a;border-radius:6px;padding:10px">
+        <div style="color:#94a3b8;font-size:10px">Хостинг</div>
+        <div style="color:#f1f5f9;font-size:13px;font-weight:600">Vercel + Vercel Postgres</div>
+      </div>
+      <div style="background:#0f172a;border-radius:6px;padding:10px">
+        <div style="color:#94a3b8;font-size:10px">Данные матчей</div>
+        <div style="color:#f1f5f9;font-size:13px;font-weight:600">football-data.org API</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Страницы -->
+  <div style="background:#1e293b;border-radius:10px;padding:16px">
+    <div style="color:#f59e0b;font-size:11px;font-weight:700;letter-spacing:1px;margin-bottom:10px">СТРАНИЦЫ</div>
+    <div style="display:flex;flex-direction:column;gap:6px">
+      <div style="display:flex;align-items:center;gap:10px;background:#0f172a;border-radius:6px;padding:8px 12px">
+        <span style="color:#0ea5e9;font-size:12px;font-weight:600;min-width:120px">/</span>
+        <span style="color:#f1f5f9;font-size:12px">Главная — ближайшие матчи, кнопки прогноза</span>
+        <span style="color:#64748b;font-size:10px;margin-left:auto">публичный</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;background:#0f172a;border-radius:6px;padding:8px 12px">
+        <span style="color:#0ea5e9;font-size:12px;font-weight:600;min-width:120px">/matches</span>
+        <span style="color:#f1f5f9;font-size:12px">Все матчи по группам и стадиям</span>
+        <span style="color:#64748b;font-size:10px;margin-left:auto">авторизован</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;background:#0f172a;border-radius:6px;padding:8px 12px">
+        <span style="color:#0ea5e9;font-size:12px;font-weight:600;min-width:120px">/matches/[id]</span>
+        <span style="color:#f1f5f9;font-size:12px">Форма прогноза на матч</span>
+        <span style="color:#64748b;font-size:10px;margin-left:auto">авторизован</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;background:#0f172a;border-radius:6px;padding:8px 12px">
+        <span style="color:#0ea5e9;font-size:12px;font-weight:600;min-width:120px">/leaderboard</span>
+        <span style="color:#f1f5f9;font-size:12px">Рейтинговая таблица участников</span>
+        <span style="color:#64748b;font-size:10px;margin-left:auto">авторизован</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;background:#0f172a;border-radius:6px;padding:8px 12px;border:1px solid #0ea5e920">
+        <span style="color:#0ea5e9;font-size:12px;font-weight:600;min-width:120px">/grid</span>
+        <span style="color:#f1f5f9;font-size:12px">🆕 Сводная таблица всех прогнозов по матчам</span>
+        <span style="color:#64748b;font-size:10px;margin-left:auto">авторизован</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;background:#0f172a;border-radius:6px;padding:8px 12px">
+        <span style="color:#0ea5e9;font-size:12px;font-weight:600;min-width:120px">/profile</span>
+        <span style="color:#f1f5f9;font-size:12px">Мои прогнозы, история, очки</span>
+        <span style="color:#64748b;font-size:10px;margin-left:auto">авторизован</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;background:#0f172a;border-radius:6px;padding:8px 12px">
+        <span style="color:#0ea5e9;font-size:12px;font-weight:600;min-width:120px">/admin</span>
+        <span style="color:#f1f5f9;font-size:12px">Управление участниками, статистика</span>
+        <span style="color:#f59e0b;font-size:10px;margin-left:auto">admin only</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Очки -->
+  <div style="background:#1e293b;border-radius:10px;padding:16px">
+    <div style="color:#f59e0b;font-size:11px;font-weight:700;letter-spacing:1px;margin-bottom:10px">НАЧИСЛЕНИЕ ОЧКОВ</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+      <div style="background:#0f172a;border-radius:6px;padding:10px">
+        <div style="color:#94a3b8;font-size:10px;margin-bottom:6px">ГРУППОВОЙ ЭТАП</div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="color:#f1f5f9;font-size:11px">Точный счёт</span><span style="color:#22c55e;font-weight:700">11</span></div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="color:#f1f5f9;font-size:11px">Верный исход</span><span style="color:#22c55e;font-weight:700">10−N</span></div>
+        <div style="display:flex;justify-content:space-between"><span style="color:#f1f5f9;font-size:11px">Неверный</span><span style="color:#64748b;font-weight:700">0</span></div>
+      </div>
+      <div style="background:#0f172a;border-radius:6px;padding:10px">
+        <div style="color:#94a3b8;font-size:10px;margin-bottom:6px">ПЛЕЙ-ОФФ</div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="color:#f1f5f9;font-size:11px">100% точно</span><span style="color:#22c55e;font-weight:700">22</span></div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="color:#f1f5f9;font-size:11px">Исход</span><span style="color:#22c55e;font-weight:700">10−N</span></div>
+        <div style="display:flex;justify-content:space-between"><span style="color:#f1f5f9;font-size:11px">Победитель</span><span style="color:#22c55e;font-weight:700">+10</span></div>
+      </div>
+      <div style="background:#0f172a;border-radius:6px;padding:10px">
+        <div style="color:#94a3b8;font-size:10px;margin-bottom:6px">ФИНАЛ</div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="color:#f1f5f9;font-size:11px">100% точно</span><span style="color:#22c55e;font-weight:700">32</span></div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="color:#f1f5f9;font-size:11px">Исход</span><span style="color:#22c55e;font-weight:700">15−N</span></div>
+        <div style="display:flex;justify-content:space-between"><span style="color:#f1f5f9;font-size:11px">Победитель</span><span style="color:#22c55e;font-weight:700">+15</span></div>
+      </div>
+    </div>
+    <div style="background:#0f172a;border-radius:6px;padding:10px;margin-top:8px">
+      <div style="color:#94a3b8;font-size:10px;margin-bottom:6px">ПРЕМИАЛЬНЫЕ (до старта турнира)</div>
+      <div style="display:flex;gap:16px">
+        <div style="display:flex;justify-content:space-between;gap:6px"><span style="color:#f1f5f9;font-size:11px">Полуфиналист</span><span style="color:#f59e0b;font-weight:700">+8</span></div>
+        <div style="display:flex;justify-content:space-between;gap:6px"><span style="color:#f1f5f9;font-size:11px">Финалист</span><span style="color:#f59e0b;font-weight:700">+15</span></div>
+        <div style="display:flex;justify-content:space-between;gap:6px"><span style="color:#f1f5f9;font-size:11px">Чемпион</span><span style="color:#f59e0b;font-weight:700">+30</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Ключевые правила -->
+  <div style="background:#1e293b;border-radius:10px;padding:16px">
+    <div style="color:#f59e0b;font-size:11px;font-weight:700;letter-spacing:1px;margin-bottom:10px">КЛЮЧЕВЫЕ ПРАВИЛА</div>
+    <div style="display:flex;flex-direction:column;gap:6px">
+      <div style="display:flex;align-items:flex-start;gap:10px;background:#0f172a;border-radius:6px;padding:10px">
+        <span style="font-size:16px">🔒</span>
+        <div>
+          <div style="color:#f1f5f9;font-size:12px;font-weight:600">Прогноз нельзя изменить</div>
+          <div style="color:#94a3b8;font-size:11px">Один раз сохранил — всё. Перед отправкой — диалог подтверждения.</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:10px;background:#0f172a;border-radius:6px;padding:10px">
+        <span style="font-size:16px">👁</span>
+        <div>
+          <div style="color:#f1f5f9;font-size:12px;font-weight:600">Чужие прогнозы скрыты до конца матча</div>
+          <div style="color:#94a3b8;font-size:11px">В сводной таблице /grid видишь только свои прогнозы, пока матч не завершён.</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:10px;background:#0f172a;border-radius:6px;padding:10px">
+        <span style="font-size:16px">🔄</span>
+        <div>
+          <div style="color:#f1f5f9;font-size:12px;font-weight:600">Автосинхронизация счётов</div>
+          <div style="color:#94a3b8;font-size:11px">Vercel Cron каждые 2 мин → football-data.org → автоначисление очков. Ничего вводить вручную не нужно.</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:10px;background:#0f172a;border-radius:6px;padding:10px">
+        <span style="font-size:16px">🏆</span>
+        <div>
+          <div style="color:#f1f5f9;font-size:12px;font-weight:600">Призовой фонд</div>
+          <div style="color:#94a3b8;font-size:11px">Топ-3 делят в соотношении 5:3:2. Тайбрейк: больше 100% попаданий → больше очков без премий.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
