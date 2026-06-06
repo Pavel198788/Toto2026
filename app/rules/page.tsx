@@ -38,8 +38,8 @@ export default function RulesPage() {
           </tbody>
         </table>
         <p className="text-xs text-gray-500 bg-[#0d0d0d] border border-[#1a1500] rounded-sm p-3">
-          <span className="text-white font-medium">Пример:</span> прогноз 2:1, результат 3:0 → верный исход (победа хозяев),
-          погрешность по голам = 2 → 10 − 1 − 1 = <span className="text-green-400 font-bold">8 очков</span>
+          <span className="text-white font-medium">Примеры:</span> прогноз 2:1, результат 2:1 → точный счёт → <span className="text-green-400 font-bold">12 очков</span>.
+          Прогноз 2:1, результат 3:0 → верный исход, погрешность = 2 → 10 − 1 − 1 = <span className="text-green-400 font-bold">8 очков</span>
         </p>
       </section>
 
