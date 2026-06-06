@@ -1,25 +1,80 @@
+import Link from "next/link"
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/db"
-import { MatchCard } from "@/components/match-card"
-import { Stage } from "@prisma/client"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { MatchesTabs } from "@/components/matches-tabs"
 
-const STAGE_ORDER: Stage[] = ["GROUP", "R16", "QUARTERFINAL", "SEMIFINAL", "THIRD_PLACE", "FINAL"]
-const STAGE_LABELS: Record<Stage, string> = {
-  GROUP: "Групповой этап",
-  R16: "1/8 финала",
-  QUARTERFINAL: "1/4 финала",
-  SEMIFINAL: "1/2 финала",
-  THIRD_PLACE: "Матч за 3-е место",
+const STAGE_LABELS: Record<string, string> = {
+  GROUP: "Группа",
+  R16: "1/8",
+  QUARTERFINAL: "1/4",
+  SEMIFINAL: "1/2",
+  THIRD_PLACE: "3-е место",
   FINAL: "Финал",
 }
 
-export default async function MatchesPage() {
+const TABS = [
+  { key: "all",          label: "Все матчи" },
+  { key: "tour1",        label: "Тур 1" },
+  { key: "tour2",        label: "Тур 2" },
+  { key: "tour3",        label: "Тур 3" },
+  { key: "R16",          label: "1/8 финала" },
+  { key: "QUARTERFINAL", label: "1/4 финала" },
+  { key: "SEMIFINAL",    label: "1/2 финала" },
+  { key: "THIRD_PLACE",  label: "За 3-е место" },
+  { key: "FINAL",        label: "Финал" },
+]
+
+export default async function MatchesPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ tab?: string }>
+}) {
+  const { tab = "all" } = await searchParams
   const session = await auth()
 
-  const matches = await prisma.match.findMany({
-    orderBy: { kickoff: "asc" },
-  })
+  const allMatches = await prisma.match.findMany({ orderBy: { kickoff: "asc" } })
 
+  // Определяем тур для каждого матча группового этапа по порядку внутри группы
+  // (первые 2 матча группы = Тур 1, следующие 2 = Тур 2, последние 2 = Тур 3)
+  const groupBuckets: Record<string, string[]> = {}
+  for (const m of allMatches) {
+    if (m.stage !== "GROUP") continue
+    const g = m.group ?? "?"
+    if (!groupBuckets[g]) groupBuckets[g] = []
+    groupBuckets[g].push(m.id)
+  }
+  const matchTourMap: Record<string, string> = {}
+  for (const ids of Object.values(groupBuckets)) {
+    ids.forEach((id, i) => {
+      matchTourMap[id] = i < 2 ? "tour1" : i < 4 ? "tour2" : "tour3"
+    })
+  }
+
+  function getMatchTab(m: typeof allMatches[0]): string {
+    if (m.stage !== "GROUP") return m.stage
+    return matchTourMap[m.id] ?? "tour1"
+  }
+
+  // Count per tab
+  const counts: Record<string, number> = { all: allMatches.length }
+  for (const m of allMatches) {
+    const t = getMatchTab(m)
+    counts[t] = (counts[t] ?? 0) + 1
+  }
+
+  const tabs = TABS.map((t) => ({ ...t, count: counts[t.key] ?? 0 })).filter(
+    (t) => t.key === "all" || t.count > 0
+  )
+
+  // Filter matches for active tab
+  const matches =
+    tab === "all"
+      ? allMatches
+      : allMatches.filter((m) => getMatchTab(m) === tab)
+
+  // User predictions
   let userPredictions: Record<string, { homeScore: number; awayScore: number; points?: number | null }> = {}
   if (session?.user?.id) {
     const preds = await prisma.prediction.findMany({
@@ -29,40 +84,126 @@ export default async function MatchesPage() {
     userPredictions = Object.fromEntries(preds.map((p) => [p.matchId, p]))
   }
 
-  const grouped = STAGE_ORDER.reduce((acc, stage) => {
-    const stageMatches = matches.filter((m) => m.stage === stage)
-    if (stageMatches.length > 0) acc[stage] = stageMatches
-    return acc
-  }, {} as Record<Stage, typeof matches>)
+  // Group visible matches by date (Moscow time UTC+3)
+  const byDate: { dateKey: string; label: string; matches: typeof matches }[] = []
+  for (const match of matches) {
+    const msk = new Date(match.kickoff.getTime() + 3 * 60 * 60 * 1000)
+    const dateKey = msk.toISOString().slice(0, 10)
+    const label = match.kickoff.toLocaleDateString("ru-RU", {
+      weekday: "long",
+      day: "numeric",
+      month: "long",
+      timeZone: "Europe/Moscow",
+    })
+    let group = byDate.find((g) => g.dateKey === dateKey)
+    if (!group) {
+      group = { dateKey, label, matches: [] }
+      byDate.push(group)
+    }
+    group.matches.push(match)
+  }
 
   return (
-    <div className="space-y-10">
-      <h1 className="text-2xl font-bold">Все матчи</h1>
+    <div className="space-y-6">
+      <h1 className="text-2xl font-bold">Расписание матчей</h1>
 
-      {(Object.entries(grouped) as [Stage, typeof matches][]).map(([stage, stageMatches]) => (
-        <section key={stage}>
-          <h2 className="text-lg font-semibold text-gray-300 mb-4 border-b border-gray-800 pb-2">
-            {STAGE_LABELS[stage]}
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {stageMatches.map((match) => (
-              <MatchCard
-                key={match.id}
-                match={match}
-                hasPrediction={match.id in userPredictions}
-                prediction={userPredictions[match.id] ?? null}
-              />
-            ))}
-          </div>
-        </section>
-      ))}
+      <MatchesTabs tabs={tabs} activeTab={tab} />
 
       {matches.length === 0 && (
         <div className="text-center py-20 text-gray-500">
-          <p className="text-lg">Матчи ещё не загружены</p>
-          <p className="text-sm mt-2">Данные появятся после синхронизации с football-data.org</p>
+          <p className="text-lg">Матчи не найдены</p>
         </div>
       )}
+
+      {byDate.map(({ dateKey, label, matches: dayMatches }) => (
+        <section key={dateKey}>
+          <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-widest mb-3 border-b border-gray-800 pb-2 capitalize">
+            {label}
+          </h2>
+
+          <div className="divide-y divide-gray-800/60">
+            {dayMatches.map((match) => {
+              const kickoff = new Date(match.kickoff)
+              const timeStr = kickoff.toLocaleTimeString("ru-RU", {
+                hour: "2-digit",
+                minute: "2-digit",
+                timeZone: "Europe/Moscow",
+              })
+              const groupLetter = match.group?.replace(/^GROUP_/, "") ?? ""
+              const stageLabel =
+                match.stage === "GROUP" && groupLetter
+                  ? `Группа ${groupLetter}`
+                  : STAGE_LABELS[match.stage] ?? match.stage
+
+              const isFinished = match.status === "FINISHED"
+              const isLive = match.status === "IN_PLAY" || match.status === "PAUSED"
+              const canPredict = match.status === "SCHEDULED" && !(match.id in userPredictions)
+              const pred = userPredictions[match.id]
+
+              return (
+                <div key={match.id} className="py-3 flex items-center gap-3 hover:bg-gray-900/30 -mx-2 px-2 rounded transition-colors">
+                  {/* Time */}
+                  <span className="w-12 text-sm text-gray-500 shrink-0 font-mono">{timeStr}</span>
+
+                  {/* Stage badge */}
+                  <Badge variant="outline" className="hidden sm:inline-flex shrink-0 text-xs border-gray-700 text-gray-400 w-20 justify-center">
+                    {stageLabel}
+                  </Badge>
+
+                  {/* Teams + score */}
+                  <div className="flex-1 flex items-center gap-2 min-w-0">
+                    <span className="font-medium text-sm truncate flex-1 text-right">{match.homeTeam}</span>
+
+                    <div className="shrink-0 w-14 text-center">
+                      {isFinished || isLive ? (
+                        <span className={`font-bold text-base ${isLive ? "text-green-400" : "text-white"}`}>
+                          {match.homeScore ?? 0}:{match.awayScore ?? 0}
+                        </span>
+                      ) : (
+                        <span className="text-gray-600 text-sm">—</span>
+                      )}
+                    </div>
+
+                    <span className="font-medium text-sm truncate flex-1">{match.awayTeam}</span>
+                  </div>
+
+                  {/* Status / prediction / action */}
+                  <div className="shrink-0 flex items-center gap-2 ml-auto">
+                    {isLive && (
+                      <span className="text-xs text-green-400 font-medium animate-pulse hidden sm:inline">
+                        Идёт
+                      </span>
+                    )}
+                    {isFinished && pred && (
+                      <span className="text-xs text-gray-400">
+                        {pred.homeScore}:{pred.awayScore}
+                        {pred.points != null && (
+                          <span className={`ml-1 font-bold ${pred.points > 0 ? "text-green-400" : "text-gray-600"}`}>
+                            {pred.points > 0 ? `+${pred.points}` : pred.points}
+                          </span>
+                        )}
+                      </span>
+                    )}
+                    {isFinished && !pred && (
+                      <span className="text-xs text-gray-600 hidden sm:inline">без прогноза</span>
+                    )}
+                    {!isFinished && !isLive && pred && (
+                      <span className="text-xs text-green-400">✓ {pred.homeScore}:{pred.awayScore}</span>
+                    )}
+                    {canPredict && session && (
+                      <Link href={`/matches/${match.id}`}>
+                        <Button size="sm" variant="outline" className="h-7 text-xs px-2 border-yellow-700 text-yellow-500 hover:bg-yellow-900/20">
+                          Прогноз
+                        </Button>
+                      </Link>
+                    )}
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        </section>
+      ))}
     </div>
   )
 }

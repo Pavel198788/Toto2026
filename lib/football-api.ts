@@ -20,6 +20,7 @@ export interface FDMatch {
   group?: string | null
   utcDate: string
   score: FDScore
+  venue?: string | null
 }
 
 async function fetchFD<T>(path: string): Promise<T> {
@@ -72,4 +73,38 @@ export function mapStage(fdStage: string): string {
 
 export function mapStatus(fdStatus: string): string {
   return STATUS_MAP[fdStatus] ?? "SCHEDULED"
+}
+
+// Lookup table: partial venue name (lowercase) → city + country in Russian
+const VENUE_LOOKUP: Array<{ match: string; city: string; country: string }> = [
+  // Mexico
+  { match: "azteca",    city: "Мехико",       country: "Мексика" },
+  { match: "ciudad de", city: "Мехико",       country: "Мексика" },
+  { match: "akron",     city: "Гвадалахара",  country: "Мексика" },
+  // Canada
+  { match: "bc place",  city: "Ванкувер",     country: "Канада" },
+  { match: "bmo",       city: "Торонто",      country: "Канада" },
+  // USA
+  { match: "at&t",      city: "Даллас",       country: "США" },
+  { match: "allegiant", city: "Лас-Вегас",    country: "США" },
+  { match: "levi",      city: "Сан-Хосе",     country: "США" },
+  { match: "metlife",   city: "Нью-Йорк",     country: "США" },
+  { match: "rose bowl", city: "Лос-Анджелес", country: "США" },
+  { match: "sofi",      city: "Лос-Анджелес", country: "США" },
+  { match: "gillette",  city: "Бостон",       country: "США" },
+  { match: "hard rock", city: "Майами",       country: "США" },
+  { match: "lincoln",   city: "Филадельфия",  country: "США" },
+  { match: "mile high", city: "Денвер",       country: "США" },
+  { match: "lumen",     city: "Сиэтл",        country: "США" },
+  { match: "nrg",       city: "Хьюстон",      country: "США" },
+  { match: "arrowhead", city: "Канзас-Сити",  country: "США" },
+  { match: "kansas",    city: "Канзас-Сити",  country: "США" },
+]
+
+export function resolveVenueLocation(venue: string | null | undefined): { city: string | null; country: string | null } {
+  if (!venue) return { city: null, country: null }
+  const lower = venue.toLowerCase()
+  const found = VENUE_LOOKUP.find((entry) => lower.includes(entry.match))
+  if (!found) return { city: null, country: null }
+  return { city: found.city, country: found.country }
 }

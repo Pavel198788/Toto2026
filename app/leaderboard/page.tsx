@@ -6,6 +6,7 @@ export default async function LeaderboardPage() {
   const session = await auth()
 
   const users = await prisma.user.findMany({
+    where: { isAdmin: false },
     select: {
       id: true,
       name: true,
@@ -23,10 +24,12 @@ export default async function LeaderboardPage() {
 
   const entries = users
     .map((user) => {
-      const matchPts = user.predictions.reduce((s, p) => s + (p.points ?? 0), 0)
       const bonusPts = user.bonusPredictions.reduce((s, b) => s + (b.points ?? 0), 0)
       const groupPts = user.predictions
         .filter((p) => p.match.stage === "GROUP")
+        .reduce((s, p) => s + (p.points ?? 0), 0)
+      const playoffPts = user.predictions
+        .filter((p) => p.match.stage !== "GROUP")
         .reduce((s, p) => s + (p.points ?? 0), 0)
       const exactCount = user.predictions.filter((p) =>
         p.points === 11 || p.points === 22 || p.points === 32
@@ -34,9 +37,9 @@ export default async function LeaderboardPage() {
       return {
         id: user.id,
         name: user.name,
-        total: matchPts + bonusPts,
-        matchPoints: matchPts,
+        total: groupPts + playoffPts + bonusPts,
         groupPoints: groupPts,
+        playoffPoints: playoffPts,
         bonusPoints: bonusPts,
         exactCount,
       }
@@ -54,7 +57,8 @@ export default async function LeaderboardPage() {
         )}
       </div>
       <div className="text-xs text-gray-600 space-y-1">
-        <p><strong>Итого</strong> = очки за матчи + бонусные очки</p>
+        <p><strong>Итого</strong> = Группа + Плей-офф + Бонусы</p>
+        <p><strong>Плей-офф</strong> = 1/8, 1/4, 1/2 финала, матч за 3-е место, финал</p>
         <p><strong>100%</strong> = количество точных прогнозов (11/22/32 очка)</p>
         <p>При равенстве: сначала больше точных прогнозов</p>
       </div>

@@ -4,8 +4,8 @@ interface LeaderboardEntry {
   id: string
   name: string
   total: number
-  matchPoints: number
   groupPoints: number
+  playoffPoints: number
   bonusPoints: number
   exactCount: number
 }
@@ -25,8 +25,9 @@ export function LeaderboardTable({ entries, currentUserId }: LeaderboardTablePro
           <tr className="border-b border-gray-800 text-gray-400 text-left">
             <th className="py-3 px-2 w-8">#</th>
             <th className="py-3 px-2">Участник</th>
-            <th className="py-3 px-2 text-right">Итого</th>
-            <th className="py-3 px-2 text-right hidden md:table-cell">Матчи</th>
+            <th className="py-3 px-2 text-right font-bold text-gray-300">Итого</th>
+            <th className="py-3 px-2 text-right hidden md:table-cell">Группа</th>
+            <th className="py-3 px-2 text-right hidden md:table-cell">Плей-офф</th>
             <th className="py-3 px-2 text-right hidden md:table-cell">Бонусы</th>
             <th className="py-3 px-2 text-right hidden md:table-cell">100%</th>
           </tr>
@@ -45,24 +46,36 @@ export function LeaderboardTable({ entries, currentUserId }: LeaderboardTablePro
                   {MEDALS[index] ?? index + 1}
                 </td>
                 <td className="py-3 px-2 font-medium">
-                  {entry.name}
-                  {isCurrentUser && (
-                    <Badge variant="outline" className="ml-2 text-xs border-yellow-700 text-yellow-500">
-                      Вы
-                    </Badge>
-                  )}
+                  <div>
+                    <span>{entry.name}</span>
+                    {isCurrentUser && (
+                      <Badge variant="outline" className="ml-2 text-xs border-yellow-700 text-yellow-500">
+                        Вы
+                      </Badge>
+                    )}
+                  </div>
+                  <div className="flex gap-2 mt-0.5 text-xs text-gray-500 md:hidden">
+                    <span>Гр: {entry.groupPoints}</span>
+                    <span>·</span>
+                    <span>П/О: {entry.playoffPoints}</span>
+                    <span>·</span>
+                    <span>Бон: {entry.bonusPoints > 0 ? `+${entry.bonusPoints}` : 0}</span>
+                  </div>
                 </td>
                 <td className="py-3 px-2 text-right font-bold text-yellow-400 text-base">
                   {entry.total}
                 </td>
                 <td className="py-3 px-2 text-right text-gray-300 hidden md:table-cell">
-                  {entry.matchPoints}
+                  {entry.groupPoints > 0 ? entry.groupPoints : "—"}
+                </td>
+                <td className="py-3 px-2 text-right text-gray-300 hidden md:table-cell">
+                  {entry.playoffPoints > 0 ? entry.playoffPoints : "—"}
                 </td>
                 <td className="py-3 px-2 text-right text-gray-300 hidden md:table-cell">
                   {entry.bonusPoints > 0 ? `+${entry.bonusPoints}` : "—"}
                 </td>
                 <td className="py-3 px-2 text-right text-green-400 hidden md:table-cell">
-                  {entry.exactCount}
+                  {entry.exactCount > 0 ? entry.exactCount : "—"}
                 </td>
               </tr>
             )

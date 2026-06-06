@@ -13,6 +13,8 @@ interface MatchCardProps {
     homeScore?: number | null
     awayScore?: number | null
     status: string
+    city?: string | null
+    country?: string | null
   }
   hasPrediction?: boolean
   prediction?: { homeScore: number; awayScore: number; points?: number | null } | null
@@ -37,8 +39,9 @@ const STATUS_COLORS: Record<string, string> = {
 
 export function MatchCard({ match, hasPrediction, prediction }: MatchCardProps) {
   const kickoff = new Date(match.kickoff)
-  const stageLabel = match.stage === "GROUP" && match.group
-    ? `Группа ${match.group}`
+  const groupLetter = match.group?.replace(/^GROUP_/, "") ?? ""
+  const stageLabel = match.stage === "GROUP" && groupLetter
+    ? `Группа ${groupLetter}`
     : STAGE_LABELS[match.stage] ?? match.stage
 
   const isFinished = match.status === "FINISHED"
@@ -51,10 +54,17 @@ export function MatchCard({ match, hasPrediction, prediction }: MatchCardProps) 
         <Badge variant="outline" className="text-xs text-gray-400 border-gray-700">
           {stageLabel}
         </Badge>
-        <span className="text-xs text-gray-500">
-          {kickoff.toLocaleDateString("ru-RU", { day: "numeric", month: "short" })}{" "}
-          {kickoff.toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" })}
-        </span>
+        <div className="text-right">
+          <div className="text-xs text-gray-500">
+            {kickoff.toLocaleDateString("ru-RU", { day: "numeric", month: "short" })}{" "}
+            {kickoff.toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" })}
+          </div>
+          {(match.city || match.country) && (
+            <div className="text-xs text-gray-600 mt-0.5">
+              {[match.city, match.country].filter(Boolean).join(", ")}
+            </div>
+          )}
+        </div>
       </div>
 
       <div className="flex items-center justify-between gap-4">

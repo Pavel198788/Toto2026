@@ -118,6 +118,20 @@ export default function BonusPage() {
         )}
       </div>
 
+      <div className="bg-gray-900/50 border border-gray-800 rounded-lg p-4 space-y-2 text-sm text-gray-400">
+        <p>
+          Помимо прогнозов на отдельные матчи, вы можете угадать, какие команды далеко пройдут в турнире — и получить за это дополнительные очки:
+        </p>
+        <ul className="space-y-1 pl-4">
+          <li><span className="text-yellow-400 font-medium">+8 очков</span> — за каждую угаданную команду-полуфиналиста (нужно выбрать 4)</li>
+          <li><span className="text-yellow-400 font-medium">+15 очков</span> — за каждого угаданного финалиста (выбрать 2 из своих полуфиналистов)</li>
+          <li><span className="text-yellow-400 font-medium">+30 очков</span> — за угаданного чемпиона (выбрать 1 из своих финалистов)</li>
+        </ul>
+        <p className="text-gray-500 text-xs">
+          Максимум можно набрать 32 + 30 + 30 = 92 бонусных очка. Сделать прогноз нужно до 11 июня — после этого изменить его будет нельзя.
+        </p>
+      </div>
+
       {hasPoints && (
         <div className="bg-green-900/20 border border-green-800 rounded-lg p-4 text-center">
           <p className="text-sm text-gray-400">Бонусные очки</p>

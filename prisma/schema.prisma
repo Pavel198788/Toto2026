@@ -30,6 +30,9 @@ model Match {
   awayScore   Int?
   winner      String?
   status      MatchStatus  @default(SCHEDULED)
+  venue       String?
+  city        String?
+  country     String?
   predictions Prediction[]
   updatedAt   DateTime     @updatedAt
 }

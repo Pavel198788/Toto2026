@@ -3,7 +3,7 @@ import { timingSafeEqual } from "crypto"
 import { NextRequest, NextResponse } from "next/server"
 import type { Stage as PrismaStage, MatchStatus } from "@prisma/client"
 import { prisma } from "@/lib/db"
-import { getTodayMatches, getAllMatches, mapStage, mapStatus } from "@/lib/football-api"
+import { getTodayMatches, getAllMatches, mapStage, mapStatus, resolveVenueLocation } from "@/lib/football-api"
 import { calculatePoints } from "@/lib/scoring"
 import { syncToGoogleSheets } from "@/lib/google-sheets"
 import type { Stage } from "@/lib/scoring"
@@ -32,6 +32,7 @@ export async function GET(req: NextRequest) {
     const status = mapStatus(fdMatch.status)
     const homeScore = fdMatch.score.fullTime.home
     const awayScore = fdMatch.score.fullTime.away
+    const { city, country } = resolveVenueLocation(fdMatch.venue)
 
     let winner: string | null = null
     if (fdMatch.score.winner === "HOME_TEAM") winner = fdMatch.homeTeam.name
@@ -50,6 +51,9 @@ export async function GET(req: NextRequest) {
         awayScore,
         status: status as MatchStatus,
         winner,
+        venue: fdMatch.venue ?? null,
+        city,
+        country,
       },
       update: {
         homeScore,
@@ -58,6 +62,9 @@ export async function GET(req: NextRequest) {
         homeTeam: fdMatch.homeTeam.name,
         awayTeam: fdMatch.awayTeam.name,
         winner,
+        venue: fdMatch.venue ?? null,
+        city,
+        country,
       },
     })
 
