@@ -16,9 +16,6 @@ export async function Navbar() {
               <Link href="/matches" className="text-gray-300 hover:text-white transition-colors">
                 Матчи
               </Link>
-              <Link href="/rules" className="text-gray-300 hover:text-white transition-colors">
-                Правила
-              </Link>
               <Link href="/leaderboard" className="text-gray-300 hover:text-white transition-colors">
                 Рейтинг
               </Link>
@@ -27,6 +24,9 @@ export async function Navbar() {
               </Link>
               <Link href="/profile" className="text-gray-300 hover:text-white transition-colors">
                 Мои прогнозы
+              </Link>
+              <Link href="/rules" className="text-gray-300 hover:text-white transition-colors">
+                Правила
               </Link>
               {session.user.isAdmin && (
                 <Link href="/admin" className="text-orange-400 hover:text-orange-300 transition-colors">
