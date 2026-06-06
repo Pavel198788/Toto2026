@@ -144,12 +144,12 @@ export default function BonusPage() {
           Помимо прогнозов на отдельные матчи, вы можете угадать, какие команды далеко пройдут в турнире — и получить за это дополнительные очки:
         </p>
         <ul className="space-y-1 pl-4">
-          <li><span className="text-yellow-400 font-medium">+8 очков</span> — за каждую угаданную команду-полуфиналиста (нужно выбрать 4)</li>
-          <li><span className="text-yellow-400 font-medium">+15 очков</span> — за каждого угаданного финалиста (выбрать 2 из своих полуфиналистов)</li>
-          <li><span className="text-yellow-400 font-medium">+30 очков</span> — за угаданного чемпиона (выбрать 1 из своих финалистов)</li>
+          <li><span className="text-yellow-400 font-medium">+10 очков</span> — за каждую угаданную команду-полуфиналиста (нужно выбрать 4)</li>
+          <li><span className="text-yellow-400 font-medium">+20 очков</span> — за каждого угаданного финалиста (выбрать 2 из своих полуфиналистов)</li>
+          <li><span className="text-yellow-400 font-medium">+40 очков</span> — за угаданного чемпиона (выбрать 1 из своих финалистов)</li>
         </ul>
         <p className="text-gray-500 text-xs">
-          Максимум можно набрать 32 + 30 + 30 = 92 бонусных очка. Сделать прогноз нужно до 11 июня — после этого изменить его будет нельзя.
+          Максимум можно набрать 40 + 40 + 40 = 120 бонусных очков. Сделать прогноз нужно до 11 июня — после этого изменить его будет нельзя.
         </p>
       </div>
 
@@ -172,7 +172,7 @@ export default function BonusPage() {
         <div className="flex flex-wrap gap-2">
           {(data?.teams ?? []).map((team) => {
             const selected = semifinalists.includes(team)
-            const isCorrect = data?.predictions.find((p) => p.type === "SEMIFINAL" && p.team === team)?.points === 8
+            const isCorrect = data?.predictions.find((p) => p.type === "SEMIFINAL" && p.team === team)?.points === 10
             const isWrong = data?.predictions.find((p) => p.type === "SEMIFINAL" && p.team === team)?.points === 0 && hasPoints
             return (
               <button
@@ -215,7 +215,7 @@ export default function BonusPage() {
           <div className="flex flex-wrap gap-3">
             {semifinalists.map((team) => {
               const selected = finalists.includes(team)
-              const isCorrect = data?.predictions.find((p) => p.type === "FINALIST" && p.team === team)?.points === 15
+              const isCorrect = data?.predictions.find((p) => p.type === "FINALIST" && p.team === team)?.points === 20
               const isWrong = data?.predictions.find((p) => p.type === "FINALIST" && p.team === team)?.points === 0 && hasPoints
               return (
                 <button
@@ -254,7 +254,7 @@ export default function BonusPage() {
           <div className="flex flex-wrap gap-4">
             {finalists.map((team) => {
               const selected = champion === team
-              const isCorrect = data?.predictions.find((p) => p.type === "CHAMPION" && p.team === team)?.points === 30
+              const isCorrect = data?.predictions.find((p) => p.type === "CHAMPION" && p.team === team)?.points === 40
               const isWrong = data?.predictions.find((p) => p.type === "CHAMPION" && p.team === team)?.points === 0 && hasPoints
               return (
                 <button

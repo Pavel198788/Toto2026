@@ -24,10 +24,10 @@ export function NavTabs({ isAdmin }: { isAdmin?: boolean }) {
               key={tab.href}
               href={tab.href}
               className={[
-                "px-4 py-2 text-[10px] tracking-widest whitespace-nowrap border-b-2 -mb-px transition-colors duration-150",
+                "px-4 py-2 text-[11px] tracking-widest whitespace-nowrap border-b-2 -mb-px transition-colors duration-150",
                 pathname.startsWith(tab.href)
                   ? "text-yellow-400 border-yellow-400"
-                  : "text-gray-700 border-transparent hover:text-gray-500",
+                  : "text-gray-500 border-transparent hover:text-gray-300",
               ].join(" ")}
             >
               {tab.label}

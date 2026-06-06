@@ -65,18 +65,18 @@ export default async function LeaderboardPage() {
 
         {/* Строки */}
         {[
-          { medal: "🥇", label: "1 место", pct: 0.55, color: "text-yellow-400", sub: "text-[#4a3800]" },
-          { medal: "🥈", label: "2 место", pct: 0.25, color: "text-[#c0b040]", sub: "text-[#3a2e00]" },
-          { medal: "🥉", label: "3 место", pct: 0.10, color: "text-[#a09020]", sub: "text-[#3a2a00]" },
-          { medal: "🎯", label: "Лучший в плей-офф", pct: 0.10, color: "text-green-400", sub: "text-[#2a3a2a]" },
-        ].map(({ medal, label, pct, color, sub }) => (
+          { medal: "🥇", label: "1 место", pct: 0.55, color: "text-yellow-400", nameColor: "text-yellow-200", sub: "text-[#8a6a00]" },
+          { medal: "🥈", label: "2 место", pct: 0.25, color: "text-gray-300", nameColor: "text-gray-300", sub: "text-gray-600" },
+          { medal: "🥉", label: "3 место", pct: 0.10, color: "text-orange-300", nameColor: "text-orange-300", sub: "text-[#7a4a1a]" },
+          { medal: "🎯", label: "Лучший в плей-офф", pct: 0.10, color: "text-green-400", nameColor: "text-green-300", sub: "text-green-800" },
+        ].map(({ medal, label, pct, color, nameColor, sub }) => (
           <div key={label} className="flex items-center gap-3 px-5 py-3 border-b border-[#1a1200] last:border-b-0">
             <span className="text-lg w-7 flex-shrink-0">{medal}</span>
             <div className="flex-1">
-              <p className="text-[10px] text-[#a08000] tracking-wide">{label}</p>
-              <p className={`text-[9px] tracking-wide ${sub}`}>{Math.round(pct * 100)}% от фонда</p>
+              <p className={`text-[11px] font-semibold tracking-wide ${nameColor}`}>{label}</p>
+              <p className={`text-[10px] tracking-wide mt-0.5 ${sub}`}>{Math.round(pct * 100)}% от фонда</p>
             </div>
-            <span className={`text-[15px] font-black ${color}`}>{fmt(Math.round(totalPrize * pct))}</span>
+            <span className={`text-base font-black ${color}`}>{fmt(Math.round(totalPrize * pct))}</span>
           </div>
         ))}
       </div>
