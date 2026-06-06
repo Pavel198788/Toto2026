@@ -2,11 +2,23 @@
 
 import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
+import { teamFlag } from "@/lib/flags"
+import { computeBonusPoints } from "@/lib/bonus-utils"
 
 interface BonusData {
   predictions: { type: string; team: string; points: number | null }[]
   teams: string[]
   locked: boolean
+  currentUserId: string
+}
+
+interface AllBonusData {
+  locked: boolean
+  users: Array<{
+    id: string
+    name: string
+    predictions: Array<{ type: string; team: string; points: number | null }>
+  }>
 }
 
 export default function BonusPage() {
@@ -20,6 +32,7 @@ export default function BonusPage() {
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [allData, setAllData] = useState<AllBonusData | null>(null)
 
   useEffect(() => {
     fetch("/api/bonus")
@@ -35,6 +48,15 @@ export default function BonusPage() {
       })
       .finally(() => setLoading(false))
   }, [])
+
+  useEffect(() => {
+    if (!data?.locked) return
+    fetch("/api/bonus/all")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d: AllBonusData | null) => {
+        if (d) setAllData(d)
+      })
+  }, [data?.locked])
 
   function toggleSemifinalist(team: string) {
     if (data?.locked) return
@@ -288,6 +310,74 @@ export default function BonusPage() {
         <p className="text-xs text-gray-500 text-center">
           Прогноз можно изменить до начала первого матча (11 июня). После сохранения — изменить нельзя.
         </p>
+      )}
+
+      {/* ТАБЛИЦА ПРОГНОЗОВ УЧАСТНИКОВ — только после начала ЧМ */}
+      {locked && allData && allData.users.length > 0 && (
+        <section className="space-y-4">
+          <h2 className="text-xl font-bold">Прогнозы участников</h2>
+          <div className="overflow-x-auto rounded-lg border border-gray-800">
+            <table className="w-full text-sm text-left">
+              <thead>
+                <tr className="border-b border-gray-800 bg-gray-900/80">
+                  <th className="px-4 py-3 font-semibold text-gray-300 whitespace-nowrap">Участник</th>
+                  <th className="px-4 py-3 font-semibold text-gray-300 whitespace-nowrap">🏅 Полуфиналисты (+8)</th>
+                  <th className="px-4 py-3 font-semibold text-gray-300 whitespace-nowrap">🥈 Финалисты (+15)</th>
+                  <th className="px-4 py-3 font-semibold text-gray-300 whitespace-nowrap">🏆 Чемпион (+30)</th>
+                  <th className="px-4 py-3 font-semibold text-gray-300 whitespace-nowrap text-right">Очки</th>
+                </tr>
+              </thead>
+              <tbody>
+                {allData.users.map((user) => {
+                  const hasPredictions = user.predictions.length > 0
+                  const semis = user.predictions.filter((p) => p.type === "SEMIFINAL")
+                  const fins = user.predictions.filter((p) => p.type === "FINALIST")
+                  const champ = user.predictions.find((p) => p.type === "CHAMPION")
+                  const pts = computeBonusPoints(user.predictions)
+                  const isMe = user.id === data?.currentUserId
+
+                  return (
+                    <tr
+                      key={user.id}
+                      className={[
+                        "border-b border-gray-800/60 transition-colors",
+                        !hasPredictions ? "opacity-50" : "",
+                        isMe ? "bg-yellow-900/20" : "hover:bg-gray-900/40",
+                      ].join(" ")}
+                    >
+                      <td className="px-4 py-3 font-medium text-gray-200 whitespace-nowrap">
+                        {user.name}
+                      </td>
+                      <td className="px-4 py-3 text-gray-300">
+                        {!hasPredictions
+                          ? <span className="text-gray-500 italic">не заполнил</span>
+                          : semis.map((p) => `${teamFlag(p.team)} ${p.team}`).join("  ")}
+                      </td>
+                      <td className="px-4 py-3 text-gray-300">
+                        {fins.length > 0
+                          ? fins.map((p) => `${teamFlag(p.team)} ${p.team}`).join("  ")
+                          : <span className="text-gray-600">—</span>}
+                      </td>
+                      <td className="px-4 py-3 text-gray-300">
+                        {champ
+                          ? `${teamFlag(champ.team)} ${champ.team}`
+                          : <span className="text-gray-600">—</span>}
+                      </td>
+                      <td className="px-4 py-3 text-right font-medium">
+                        {pts !== null
+                          ? <span className="text-green-400">+{pts}</span>
+                          : <span className="text-gray-600">—</span>}
+                      </td>
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
+          </div>
+          <p className="text-xs text-gray-500 text-center">
+            Очки начисляются по мере прохождения этапов. «—» — результат ещё не известен.
+          </p>
+        </section>
       )}
     </div>
   )

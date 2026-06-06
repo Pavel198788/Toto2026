@@ -32,7 +32,7 @@ export async function GET() {
 
   const locked = firstMatch ? new Date() >= new Date(firstMatch.kickoff) : false
 
-  return NextResponse.json({ predictions, teams: allTeams, locked })
+  return NextResponse.json({ predictions, teams: allTeams, locked, currentUserId: session.user.id })
 }
 
 // Saves bonus predictions (only before the first match kicks off)
