@@ -8,7 +8,7 @@ import {
 } from "@/lib/profile-stats"
 import { teamFlag } from "@/lib/flags"
 
-const EXACT_POINTS = new Set([11, 25, 35])
+const EXACT_POINTS = new Set([12, 25, 35])
 
 const STAGE_LABELS: Record<string, string> = {
   tour1: "Тур 1", tour2: "Тур 2", tour3: "Тур 3",

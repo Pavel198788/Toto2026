@@ -31,7 +31,7 @@ export function calculatePoints(input: ScoringInput): number {
 
   if (stage === "GROUP") {
     if (!isCorrectOutcome) return 0
-    if (isExactScore) return 11
+    if (isExactScore) return 12
     return Math.max(0, 10 - goalError(predictedHome, predictedAway, actualHome, actualAway))
   }
 

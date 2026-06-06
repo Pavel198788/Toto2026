@@ -16,7 +16,7 @@ export default function RulesPage() {
           <tbody className="divide-y divide-[#1a1500]">
             <tr>
               <td className="py-3">Точный счёт (100%)</td>
-              <td className="py-3 text-right font-bold text-green-400">11</td>
+              <td className="py-3 text-right font-bold text-green-400">12</td>
             </tr>
             <tr>
               <td className="py-3">
