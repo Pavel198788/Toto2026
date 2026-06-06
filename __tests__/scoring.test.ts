@@ -96,6 +96,27 @@ describe("calculatePoints — плей-офф (R16/QUARTERFINAL/SEMIFINAL/THIRD_
       actualWinner: "Brazil",
     })).toBe(0)
   })
+
+  it("возвращает (10−N) за точный счёт, но неверный победитель", () => {
+    // Exact score but wrong winner: gets outcome points only (N=0), no winner bonus
+    expect(calculatePoints({
+      stage: "R16",
+      predictedHome: 2, predictedAway: 1,
+      actualHome: 2, actualAway: 1,
+      predictedWinner: "Germany",
+      actualWinner: "Brazil",
+    })).toBe(10) // (10-0) + 0 winner bonus
+  })
+
+  it("THIRD_PLACE обрабатывается как плей-офф: точный счёт + верный победитель = 22", () => {
+    expect(calculatePoints({
+      stage: "THIRD_PLACE",
+      predictedHome: 1, predictedAway: 0,
+      actualHome: 1, actualAway: 0,
+      predictedWinner: "Croatia",
+      actualWinner: "Croatia",
+    })).toBe(22)
+  })
 })
 
 describe("calculatePoints — финал", () => {
@@ -138,5 +159,16 @@ describe("calculatePoints — финал", () => {
       predictedWinner: "Germany",
       actualWinner: "Brazil",
     })).toBe(0)
+  })
+
+  it("возвращает (15−N) за верный исход регл. времени, неверный победитель", () => {
+    // outcome correct (N=1), wrong winner: 15-1 = 14
+    expect(calculatePoints({
+      stage: "FINAL",
+      predictedHome: 2, predictedAway: 0,
+      actualHome: 3, actualAway: 0,
+      predictedWinner: "Germany",
+      actualWinner: "Brazil",
+    })).toBe(14) // (15-1) + 0
   })
 })
