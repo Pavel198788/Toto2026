@@ -36,7 +36,7 @@ export function calculatePoints(input: ScoringInput): number {
   }
 
   if (stage === "FINAL") {
-    if (isExactScore && isCorrectWinner) return 32
+    if (isExactScore && isCorrectWinner) return 38
     let pts = 0
     if (isCorrectOutcome) pts += Math.max(0, 15 - goalError(predictedHome, predictedAway, actualHome, actualAway))
     if (isCorrectWinner) pts += 15
@@ -44,7 +44,7 @@ export function calculatePoints(input: ScoringInput): number {
   }
 
   // R16, QUARTERFINAL, SEMIFINAL, THIRD_PLACE
-  if (isExactScore && isCorrectWinner) return 22
+  if (isExactScore && isCorrectWinner) return 25
   let pts = 0
   if (isCorrectOutcome) pts += Math.max(0, 10 - goalError(predictedHome, predictedAway, actualHome, actualAway))
   if (isCorrectWinner) pts += 10

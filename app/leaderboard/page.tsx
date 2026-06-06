@@ -32,7 +32,7 @@ export default async function LeaderboardPage() {
         .filter((p) => p.match.stage !== "GROUP")
         .reduce((s, p) => s + (p.points ?? 0), 0)
       const exactCount = user.predictions.filter((p) =>
-        p.points === 11 || p.points === 22 || p.points === 32
+        p.points === 11 || p.points === 25 || p.points === 38
       ).length
       return {
         id: user.id,
@@ -91,7 +91,7 @@ export default async function LeaderboardPage() {
       <div className="text-[10px] text-gray-700 space-y-1 tracking-wide">
         <p><strong>Итого</strong> = Группа + Плей-офф + Бонусы</p>
         <p><strong>Плей-офф</strong> = 1/8, 1/4, 1/2 финала, матч за 3-е место, финал</p>
-        <p><strong>100%</strong> = количество точных прогнозов (11/22/32 очка)</p>
+        <p><strong>100%</strong> = количество точных прогнозов (11/25/38 очка)</p>
         <p>При равенстве: сначала больше точных прогнозов</p>
       </div>
     </div>

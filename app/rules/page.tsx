@@ -56,7 +56,7 @@ export default function RulesPage() {
           <tbody className="divide-y divide-[#1a1500]">
             <tr>
               <td className="py-3">Точный счёт + верный победитель (100%)</td>
-              <td className="py-3 text-right font-bold text-green-400">22</td>
+              <td className="py-3 text-right font-bold text-green-400">25</td>
             </tr>
             <tr>
               <td className="py-3">Верный исход основного/доп. времени</td>
@@ -87,7 +87,7 @@ export default function RulesPage() {
           <tbody className="divide-y divide-[#1a1500]">
             <tr>
               <td className="py-3">Точный счёт + верный победитель (100%)</td>
-              <td className="py-3 text-right font-bold text-green-400">32</td>
+              <td className="py-3 text-right font-bold text-green-400">38</td>
             </tr>
             <tr>
               <td className="py-3">Верный исход основного/доп. времени</td>
