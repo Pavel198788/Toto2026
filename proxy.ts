@@ -12,7 +12,7 @@ export default auth((req) => {
     return NextResponse.next()
   }
 
-  const publicPaths = ["/", "/auth/login", "/auth/register"]
+  const publicPaths = ["/", "/auth/login", "/auth/register", "/auth/forgot-password", "/auth/reset-password"]
   if (!isAuthenticated && !publicPaths.includes(pathname)) {
     return NextResponse.redirect(new URL("/auth/login", req.url))
   }

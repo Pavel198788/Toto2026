@@ -72,6 +72,11 @@ export default function LoginPage() {
               />
             </div>
             {error && <p className="text-red-400 text-sm">{error}</p>}
+            <div className="text-right">
+              <Link href="/auth/forgot-password" className="text-sm text-yellow-400 hover:underline">
+                Забыли пароль?
+              </Link>
+            </div>
             <Button type="submit" className="w-full" disabled={loading}>
               {loading ? "Вход..." : "Войти"}
             </Button>

@@ -60,6 +60,14 @@ model BonusPrediction {
   @@unique([userId, type])
 }
 
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  email     String
+  token     String   @unique
+  expires   DateTime
+  createdAt DateTime @default(now())
+}
+
 enum Stage {
   GROUP
   R16
