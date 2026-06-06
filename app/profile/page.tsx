@@ -2,7 +2,6 @@
 import { auth } from "@/lib/auth"
 import { redirect } from "next/navigation"
 import { prisma } from "@/lib/db"
-import { Badge } from "@/components/ui/badge"
 import {
   calcRank, calcStreak, buildMatchTourMap, calcPointsByStage,
   calcTwin, calcComparison, type RankedUser,
@@ -102,7 +101,7 @@ export default async function ProfilePage() {
     <div className="space-y-6 pb-8">
       {/* 1. ШАПКА */}
       <div className="flex items-center gap-3">
-        <div className="w-12 h-12 rounded-full bg-yellow-500 flex items-center justify-center text-black font-bold text-xl shrink-0">
+        <div className="w-12 h-12 rounded-sm bg-yellow-400 flex items-center justify-center text-black font-black text-xl shrink-0">
           {initials}
         </div>
         <div className="flex-1 min-w-0">
@@ -110,7 +109,7 @@ export default async function ProfilePage() {
           <p className="text-gray-400 text-sm truncate">{session.user.email ?? ""}</p>
         </div>
         {rankInfo.rank > 0 && (
-          <div className="bg-yellow-500 text-black text-sm font-bold px-3 py-1.5 rounded-lg shrink-0">
+          <div className="bg-yellow-400 text-black text-[10px] font-black tracking-widest px-3 py-1.5 rounded-sm shrink-0">
             #{rankInfo.rank} место
           </div>
         )}
@@ -118,12 +117,12 @@ export default async function ProfilePage() {
 
       {/* 2. ЧЕТЫРЕ ПЛАШКИ */}
       <div className="grid grid-cols-2 gap-3">
-        <div className="bg-gray-900 border border-gray-800 rounded-lg p-4 text-center">
-          <p className="text-3xl font-bold text-yellow-400">{rankInfo.total}</p>
+        <div className="bg-[#111] border border-[#1a1500] rounded-sm p-4 text-center">
+          <p className="text-3xl font-black text-yellow-400">{rankInfo.total}</p>
           <p className="text-sm text-gray-400 mt-1">Очков всего</p>
         </div>
-        <div className="bg-gray-900 border border-gray-800 rounded-lg p-4 text-center">
-          <p className="text-3xl font-bold text-green-400">{accuracy}%</p>
+        <div className="bg-[#111] border border-[#1a1500] rounded-sm p-4 text-center">
+          <p className="text-3xl font-black text-green-400">{accuracy}%</p>
           <p className="text-sm text-gray-400 mt-1">Угадал исход</p>
           {finished.length > 0 && (
             <div className="flex justify-center gap-3 mt-2 text-xs">
@@ -132,11 +131,11 @@ export default async function ProfilePage() {
             </div>
           )}
         </div>
-        <div className="bg-gray-900 border border-gray-800 rounded-lg p-4 text-center">
-          <p className="text-3xl font-bold text-orange-400">🔥 {streak}</p>
+        <div className="bg-[#111] border border-[#1a1500] rounded-sm p-4 text-center">
+          <p className="text-3xl font-black text-orange-400">🔥 {streak}</p>
           <p className="text-sm text-gray-400 mt-1">Серия подряд</p>
         </div>
-        <div className="bg-gray-900 border border-gray-800 rounded-lg p-4">
+        <div className="bg-[#111] border border-[#1a1500] rounded-sm p-4">
           <div className="flex justify-between text-sm mb-2">
             <span className="text-gray-400">Прогнозов</span>
             <span className="font-bold">{myPredictions.length} / {totalMatches}</span>
@@ -155,8 +154,8 @@ export default async function ProfilePage() {
 
       {/* 3. МИНИ-РЕЙТИНГ */}
       {rankInfo.rank > 0 && (
-        <div className="bg-gray-900 border border-gray-800 rounded-lg p-4">
-          <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3">
+        <div className="bg-[#111] border border-[#1a1500] rounded-sm p-4">
+          <h2 className="text-[9px] font-bold text-yellow-400 tracking-widest uppercase mb-3">
             Рейтинг участников
           </h2>
           <div className="space-y-2">
@@ -170,7 +169,7 @@ export default async function ProfilePage() {
                 <span className="text-gray-400 text-sm w-14 text-right shrink-0">{rankInfo.above.total} оч.</span>
               </div>
             )}
-            <div className="flex items-center gap-3 bg-gray-800 rounded-lg px-2 py-1.5 -mx-2">
+            <div className="flex items-center gap-3 bg-[#1a1500] border-l-2 border-l-yellow-400 rounded-sm px-2 py-1.5 -mx-2">
               <span className="text-yellow-400 font-bold text-sm w-7">#{rankInfo.rank}</span>
               <span className="text-white font-bold text-sm flex-1 truncate">Ты</span>
               <div className="bg-gray-700 rounded h-1 w-20 shrink-0">
@@ -198,8 +197,8 @@ export default async function ProfilePage() {
       )}
 
       {/* 4. ГРАФИК ПО ЭТАПАМ */}
-      <div className="bg-gray-900 border border-gray-800 rounded-lg p-4">
-        <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-4">
+      <div className="bg-[#111] border border-[#1a1500] rounded-sm p-4">
+        <h2 className="text-[9px] font-bold text-yellow-400 tracking-widest uppercase mb-4">
           Очки по этапам
         </h2>
         <div className="flex gap-1 items-end h-16">
@@ -228,12 +227,12 @@ export default async function ProfilePage() {
 
       {/* 5. АНАЛИТИКА */}
       <div>
-        <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3">
+        <h2 className="text-[9px] font-bold text-yellow-400 tracking-widest uppercase mb-3">
           Аналитика
         </h2>
         <div className="grid grid-cols-2 gap-3">
           {/* 5а. 100% попаданий */}
-          <div className="bg-gray-900 border border-gray-800 rounded-lg p-4">
+          <div className="bg-[#111] border border-[#1a1500] rounded-sm p-4">
             <p className="text-xs text-gray-400 mb-2">ТОЧНЫЙ СЧЁТ</p>
             <div className="flex items-baseline gap-1 mb-2">
               <span className="text-2xl font-bold text-green-400">{exactCount}</span>
@@ -250,7 +249,7 @@ export default async function ProfilePage() {
 
           {/* 5б. Сравнение с группой */}
           {finished.length > 0 && (
-            <div className="bg-gray-900 border border-gray-800 rounded-lg p-4">
+            <div className="bg-[#111] border border-[#1a1500] rounded-sm p-4">
               <p className="text-xs text-gray-400 mb-3">СРАВНЕНИЕ С ГРУППОЙ</p>
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
@@ -275,7 +274,7 @@ export default async function ProfilePage() {
 
           {/* 5г. Двойник */}
           {twin && (
-            <div className="bg-gray-900 border border-gray-800 rounded-lg p-4">
+            <div className="bg-[#111] border border-[#1a1500] rounded-sm p-4">
               <p className="text-xs text-gray-400 mb-3">ТВОЙ ДВОЙНИК</p>
               <div className="flex items-center gap-2 mb-3">
                 <div className="w-8 h-8 rounded-full bg-violet-600 flex items-center justify-center text-white text-sm font-bold shrink-0">
@@ -294,7 +293,7 @@ export default async function ProfilePage() {
 
           {/* 5д. Любимый исход */}
           {myPredictions.length > 0 && (
-            <div className="bg-gray-900 border border-gray-800 rounded-lg p-4">
+            <div className="bg-[#111] border border-[#1a1500] rounded-sm p-4">
               <p className="text-xs text-gray-400 mb-3">ЛЮБИМЫЙ ИСХОД</p>
               <div className="space-y-2">
                 {[
@@ -321,7 +320,7 @@ export default async function ProfilePage() {
 
           {/* 5е. Лучший матч */}
           {bestPred && (bestPred.points ?? 0) > 0 && (
-            <div className="bg-gray-900 border border-gray-800 rounded-lg p-4">
+            <div className="bg-[#111] border border-[#1a1500] rounded-sm p-4">
               <p className="text-xs text-gray-400 mb-3">ЛУЧШИЙ МАТЧ</p>
               <p className="text-xs text-gray-300 leading-tight mb-2">
                 {teamFlag(bestPred.match.homeTeam)} {bestPred.match.homeTeam}<br />
@@ -338,7 +337,7 @@ export default async function ProfilePage() {
 
           {/* 5ж. Среднее голов */}
           {avgPredGoals !== null && (
-            <div className="bg-gray-900 border border-gray-800 rounded-lg p-4">
+            <div className="bg-[#111] border border-[#1a1500] rounded-sm p-4">
               <p className="text-xs text-gray-400 mb-3">СРЕДНЕЕ ГОЛОВ</p>
               <div className="space-y-2">
                 <div className="flex justify-between items-center">
@@ -358,7 +357,7 @@ export default async function ProfilePage() {
 
           {/* 5з. Форма (последние 5) */}
           {last5.length > 0 && (
-            <div className="bg-gray-900 border border-gray-800 rounded-lg p-4">
+            <div className="bg-[#111] border border-[#1a1500] rounded-sm p-4">
               <p className="text-xs text-gray-400 mb-3">ФОРМА (последние {last5.length})</p>
               <div className="flex gap-2 justify-center">
                 {last5.map((p, i) => {
@@ -387,7 +386,7 @@ export default async function ProfilePage() {
 
       {/* 6. СПИСОК ПРОГНОЗОВ */}
       <div>
-        <h2 className="text-lg font-semibold mb-3">Мои прогнозы</h2>
+        <h2 className="text-[10px] font-black text-yellow-400 tracking-widest uppercase mb-3">Мои прогнозы</h2>
         {myPredictions.length === 0 && (
           <p className="text-gray-500 text-center py-8">У вас пока нет прогнозов</p>
         )}
@@ -408,10 +407,10 @@ export default async function ProfilePage() {
             const leftBorder = !isFinished
               ? ""
               : isExact
-              ? "border-l-4 border-l-green-500"
+              ? "border-l-2 border-l-green-500"
               : isCorrect
-              ? "border-l-4 border-l-yellow-500"
-              : "border-l-4 border-l-gray-600"
+              ? "border-l-2 border-l-yellow-400"
+              : "border-l-2 border-l-gray-800"
 
             const actualScoreColor = isExact
               ? "text-green-400"
@@ -422,7 +421,7 @@ export default async function ProfilePage() {
             return (
               <div
                 key={pred.id}
-                className={`bg-gray-900 rounded-lg p-4 ${isFinished ? `border border-gray-800 ${leftBorder}` : "border border-dashed border-gray-700"}`}
+                className={`bg-[#111] rounded-sm p-4 ${isFinished ? `border border-[#1a1500] ${leftBorder}` : "border border-dashed border-[#1a1500]/60"}`}
               >
                 <div className="flex justify-between items-start mb-3">
                   <div>
@@ -432,20 +431,20 @@ export default async function ProfilePage() {
                     <p className="text-gray-400 text-xs mt-0.5">{kickoffStr} · {stageLabel}</p>
                   </div>
                   {isFinished ? (
-                    <Badge className={
-                      isExact ? "bg-green-900 text-green-200" :
-                      isCorrect ? "bg-yellow-900 text-yellow-200" :
-                      "bg-gray-800 text-gray-400"
+                    <span className={
+                      isExact ? "bg-green-900/40 border border-green-800 text-green-400 text-[9px] tracking-widest rounded-sm px-1.5 py-0.5" :
+                      isCorrect ? "bg-[#1a1500] border border-[#2a2000] text-yellow-400 text-[9px] tracking-widest rounded-sm px-1.5 py-0.5" :
+                      "bg-[#0d0d0d] border border-[#1a1500] text-gray-600 text-[9px] tracking-widest rounded-sm px-1.5 py-0.5"
                     }>
                       {pts > 0 ? `+${pts}` : "+0"}
-                    </Badge>
+                    </span>
                   ) : (
-                    <Badge variant="outline" className="border-gray-700 text-gray-500 text-xs">
+                    <span className="border border-[#1a1500] text-gray-600 text-[9px] tracking-widest rounded-sm px-1.5 py-0.5">
                       ожидается
-                    </Badge>
+                    </span>
                   )}
                 </div>
-                <div className="border-t border-gray-800 pt-3 flex gap-8">
+                <div className="border-t border-[#1a1500] pt-3 flex gap-8">
                   <div>
                     <p className="text-xs text-gray-400 mb-1">Мой прогноз</p>
                     <p className="font-bold text-sm">{pred.homeScore} : {pred.awayScore}</p>
