@@ -48,15 +48,15 @@ export default async function LeaderboardPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold">Рейтинг участников</h1>
-      <div className="bg-gray-900 border border-gray-800 rounded-lg p-6">
+      <h1 className="text-[10px] font-black text-yellow-400 tracking-widest uppercase">Рейтинг участников</h1>
+      <div className="bg-[#111] border border-[#1a1500] rounded-sm p-6">
         {entries.length === 0 ? (
           <p className="text-center text-gray-500 py-8">Данных пока нет</p>
         ) : (
           <LeaderboardTable entries={entries} currentUserId={session?.user?.id} />
         )}
       </div>
-      <div className="text-xs text-gray-600 space-y-1">
+      <div className="text-[10px] text-gray-700 space-y-1 tracking-wide">
         <p><strong>Итого</strong> = Группа + Плей-офф + Бонусы</p>
         <p><strong>Плей-офф</strong> = 1/8, 1/4, 1/2 финала, матч за 3-е место, финал</p>
         <p><strong>100%</strong> = количество точных прогнозов (11/22/32 очка)</p>
