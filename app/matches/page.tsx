@@ -2,6 +2,7 @@ import Link from "next/link"
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/db"
 import { MatchesTabs } from "@/components/matches-tabs"
+import { teamFlag } from "@/lib/flags"
 
 const STAGE_LABELS: Record<string, string> = {
   GROUP: "Группа",
@@ -140,10 +141,15 @@ export default async function MatchesPage({
 
               return (
                 <div key={match.id} className="py-3 flex items-center gap-3 hover:bg-[#111]/60 -mx-2 px-2 rounded-sm transition-colors">
-                  {/* Time */}
-                  <span className="w-12 text-sm text-gray-500 shrink-0 font-mono">{timeStr}</span>
+                  {/* Time + city (mobile) */}
+                  <div className="shrink-0 w-12 text-right">
+                    <span className="text-sm text-gray-500 font-mono block">{timeStr}</span>
+                    {match.city && (
+                      <span className="sm:hidden text-[9px] text-gray-500 block leading-tight">{match.city}</span>
+                    )}
+                  </div>
 
-                  {/* Stage badge + city */}
+                  {/* Stage badge + city (desktop) */}
                   <div className="hidden sm:flex flex-col items-start shrink-0 w-20 gap-0.5">
                     <span className="text-[9px] border border-[#1a1500] text-gray-600 tracking-widest w-full justify-center flex rounded-sm px-1 py-0.5">
                       {stageLabel}
@@ -155,11 +161,14 @@ export default async function MatchesPage({
 
                   {/* Teams + score */}
                   <div className="flex-1 flex items-center gap-2 min-w-0">
-                    <span className="font-medium text-sm truncate flex-1 text-right">{match.homeTeam}</span>
+                    <div className="flex-1 flex items-center justify-end gap-1 min-w-0">
+                      <span className="font-medium text-sm truncate">{match.homeTeam}</span>
+                      <span className="shrink-0 text-base leading-none">{teamFlag(match.homeTeam)}</span>
+                    </div>
 
                     <div className="shrink-0 w-14 text-center">
                       {isFinished || isLive ? (
-                        <span className={`font-bold text-base ${isLive ? "text-green-400" : "text-white"}`}>
+                        <span className={`font-bold text-2xl ${isLive ? "text-green-400" : "text-white"}`}>
                           {match.homeScore ?? 0}:{match.awayScore ?? 0}
                         </span>
                       ) : (
@@ -167,7 +176,10 @@ export default async function MatchesPage({
                       )}
                     </div>
 
-                    <span className="font-medium text-sm truncate flex-1">{match.awayTeam}</span>
+                    <div className="flex-1 flex items-center gap-1 min-w-0">
+                      <span className="shrink-0 text-base leading-none">{teamFlag(match.awayTeam)}</span>
+                      <span className="font-medium text-sm truncate">{match.awayTeam}</span>
+                    </div>
                   </div>
 
                   {/* Status / prediction / action */}
@@ -178,10 +190,10 @@ export default async function MatchesPage({
                       </span>
                     )}
                     {isFinished && pred && (
-                      <span className="text-xs text-gray-400">
+                      <span className="text-2xl font-black text-gray-400">
                         {pred.homeScore}:{pred.awayScore}
                         {pred.points != null && (
-                          <span className={`ml-1 font-bold ${pred.points > 0 ? "text-green-400" : "text-gray-600"}`}>
+                          <span className={`ml-1 ${pred.points > 0 ? "text-green-400" : "text-gray-600"}`}>
                             {pred.points > 0 ? `+${pred.points}` : pred.points}
                           </span>
                         )}
@@ -191,7 +203,7 @@ export default async function MatchesPage({
                       <span className="text-xs text-gray-600 hidden sm:inline">без прогноза</span>
                     )}
                     {!isFinished && !isLive && pred && (
-                      <span className="text-xs text-green-400">✓ {pred.homeScore}:{pred.awayScore}</span>
+                      <span className="text-2xl font-black text-green-400">✓ {pred.homeScore}:{pred.awayScore}</span>
                     )}
                     {canPredict && session && (
                       <Link href={`/matches/${match.id}`}>

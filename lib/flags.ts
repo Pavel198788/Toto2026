@@ -24,11 +24,11 @@ const FLAGS: Record<string, string> = {
   "Denmark": iso("DK"), "Poland": iso("PL"), "Serbia": iso("RS"),
   "Switzerland": iso("CH"), "Austria": iso("AT"), "Turkey": iso("TR"),
   "Ukraine": iso("UA"), "Scotland": "🏴󠁧󠁢󠁳󠁣󠁴󠁿", "Wales": "🏴󠁧󠁢󠁷󠁬󠁳󠁿",
-  "Czech Republic": iso("CZ"), "Slovakia": iso("SK"), "Hungary": iso("HU"),
+  "Czech Republic": iso("CZ"), "Czechia": iso("CZ"), "Slovakia": iso("SK"), "Hungary": iso("HU"),
   "Romania": iso("RO"), "Slovenia": iso("SI"), "Greece": iso("GR"),
   "Albania": iso("AL"), "Norway": iso("NO"), "Sweden": iso("SE"),
   "Finland": iso("FI"), "Iceland": iso("IS"), "Ireland": iso("IE"),
-  "North Macedonia": iso("MK"), "Bosnia and Herzegovina": iso("BA"),
+  "North Macedonia": iso("MK"), "Bosnia and Herzegovina": iso("BA"), "Bosnia-Herzegovina": iso("BA"),
   // Африка
   "Morocco": iso("MA"), "Senegal": iso("SN"), "Nigeria": iso("NG"),
   "Egypt": iso("EG"), "Ghana": iso("GH"), "Cameroon": iso("CM"),
@@ -40,6 +40,8 @@ const FLAGS: Record<string, string> = {
   "Saudi Arabia": iso("SA"), "Iran": iso("IR"), "Qatar": iso("QA"),
   "China": iso("CN"), "Indonesia": iso("ID"), "Uzbekistan": iso("UZ"),
   "Iraq": iso("IQ"), "Jordan": iso("JO"), "New Zealand": iso("NZ"),
+  // Другие
+  "Curaçao": iso("CW"), "Cape Verde Islands": iso("CV"), "Cape Verde": iso("CV"),
 }
 
 export function teamFlag(teamName: string): string {

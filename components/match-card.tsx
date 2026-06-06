@@ -1,4 +1,5 @@
 import Link from "next/link"
+import { teamFlag } from "@/lib/flags"
 
 interface MatchCardProps {
   match: {
@@ -51,7 +52,7 @@ export function MatchCard({ match, hasPrediction, prediction }: MatchCardProps) 
             {kickoff.toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" })}
           </div>
           {(match.city || match.country) && (
-            <div className="text-[9px] text-gray-700 mt-0.5">
+            <div className="text-[9px] text-gray-500 mt-0.5">
               {[match.city, match.country].filter(Boolean).join(", ")}
             </div>
           )}
@@ -59,7 +60,9 @@ export function MatchCard({ match, hasPrediction, prediction }: MatchCardProps) 
       </div>
 
       <div className="flex items-center justify-between gap-4">
-        <span className="font-bold text-sm flex-1 text-gray-200">{match.homeTeam}</span>
+        <span className="font-bold text-sm flex-1 text-gray-200">
+          <span className="mr-1">{teamFlag(match.homeTeam)}</span>{match.homeTeam}
+        </span>
         <div className="shrink-0 min-w-[52px] text-center">
           {isFinished || isLive ? (
             <span className={`font-black text-xl ${isLive ? "text-green-400 animate-pulse" : "text-yellow-400"}`}>
@@ -69,7 +72,9 @@ export function MatchCard({ match, hasPrediction, prediction }: MatchCardProps) 
             <span className="text-gray-700 font-bold">—</span>
           )}
         </div>
-        <span className="font-bold text-sm flex-1 text-right text-gray-200">{match.awayTeam}</span>
+        <span className="font-bold text-sm flex-1 text-right text-gray-200">
+          {match.awayTeam}<span className="ml-1">{teamFlag(match.awayTeam)}</span>
+        </span>
       </div>
 
       {prediction && (
