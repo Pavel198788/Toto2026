@@ -3,6 +3,14 @@ export default function RulesPage() {
     <div className="max-w-3xl mx-auto space-y-8">
       <h1 className="text-[10px] font-black text-yellow-400 tracking-widest uppercase">Правила тотализатора</h1>
 
+      {/* Приём ставок */}
+      <section className="bg-[#111] border border-[#1a1500] rounded-sm px-5 py-4 flex items-center gap-3">
+        <span className="text-2xl">⏱️</span>
+        <p className="text-sm text-gray-400">
+          Приём прогнозов на матч <span className="text-white font-semibold">закрывается за 3 часа до начала</span>. После этого прогноз поставить нельзя.
+        </p>
+      </section>
+
       {/* Групповой этап */}
       <section className="bg-[#111] border border-[#1a1500] rounded-sm p-6 space-y-4" style={{ borderTop: "2px solid #facc15" }}>
         <h2 className="text-[10px] font-black text-yellow-400 tracking-widest uppercase">Групповой этап</h2>
