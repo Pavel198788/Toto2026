@@ -28,7 +28,7 @@ export function LeaderboardTable({ entries, currentUserId }: LeaderboardTablePro
             <th className="py-3 px-2 text-right">Итого</th>
             <th className="py-3 px-2 text-right hidden md:table-cell">Матчи</th>
             <th className="py-3 px-2 text-right hidden md:table-cell">Бонусы</th>
-            <th className="py-3 px-2 text-right hidden sm:table-cell">100%</th>
+            <th className="py-3 px-2 text-right hidden md:table-cell">100%</th>
           </tr>
         </thead>
         <tbody>
@@ -61,7 +61,7 @@ export function LeaderboardTable({ entries, currentUserId }: LeaderboardTablePro
                 <td className="py-3 px-2 text-right text-gray-300 hidden md:table-cell">
                   {entry.bonusPoints > 0 ? `+${entry.bonusPoints}` : "—"}
                 </td>
-                <td className="py-3 px-2 text-right text-green-400 hidden sm:table-cell">
+                <td className="py-3 px-2 text-right text-green-400 hidden md:table-cell">
                   {entry.exactCount}
                 </td>
               </tr>

@@ -47,9 +47,10 @@ export default async function LeaderboardPage() {
     <div className="space-y-6">
       <h1 className="text-2xl font-bold">Рейтинг участников</h1>
       <div className="bg-gray-900 border border-gray-800 rounded-lg p-6">
-        <LeaderboardTable entries={entries} currentUserId={session?.user?.id} />
-        {entries.length === 0 && (
+        {entries.length === 0 ? (
           <p className="text-center text-gray-500 py-8">Данных пока нет</p>
+        ) : (
+          <LeaderboardTable entries={entries} currentUserId={session?.user?.id} />
         )}
       </div>
       <div className="text-xs text-gray-600 space-y-1">
