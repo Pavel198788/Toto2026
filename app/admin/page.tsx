@@ -18,6 +18,8 @@ export default function AdminPage() {
   const [loadError, setLoadError] = useState<string | null>(null)
   const [syncing, setSyncing] = useState(false)
   const [syncResult, setSyncResult] = useState<string | null>(null)
+  const [sheetsSync, setSheetsSync] = useState(false)
+  const [sheetsResult, setSheetsResult] = useState<string | null>(null)
 
   useEffect(() => {
     fetch("/api/admin/users")
@@ -73,13 +75,39 @@ export default function AdminPage() {
       <section className="bg-gray-900 border border-gray-800 rounded-lg p-6 space-y-4">
         <h2 className="text-lg font-semibold">Резервная копия</h2>
         <p className="text-sm text-gray-400">
-          Скачать Excel-файл со всеми прогнозами участников (матчи + бонусы)
+          Скачать Excel или выгрузить в Google Таблицу
         </p>
-        <a href="/api/admin/export" download>
-          <Button className="bg-green-700 hover:bg-green-600">
-            Скачать Excel
+        <div className="flex gap-3 flex-wrap">
+          <a href="/api/admin/export" download>
+            <Button className="bg-green-700 hover:bg-green-600">
+              Скачать Excel
+            </Button>
+          </a>
+          <Button
+            onClick={async () => {
+              setSheetsSync(true)
+              setSheetsResult(null)
+              try {
+                const res = await fetch("/api/admin/sync-sheets", { method: "POST" })
+                const d = await res.json()
+                setSheetsResult(d.success ? "✓ Google Таблица обновлена" : `Ошибка: ${d.error}`)
+              } catch {
+                setSheetsResult("Ошибка: сетевой сбой")
+              } finally {
+                setSheetsSync(false)
+              }
+            }}
+            disabled={sheetsSync}
+            className="bg-blue-700 hover:bg-blue-600"
+          >
+            {sheetsSync ? "Синхронизация..." : "Обновить Google Таблицу"}
           </Button>
-        </a>
+        </div>
+        {sheetsResult && (
+          <p className={`text-sm ${sheetsResult.startsWith("Ошибка") ? "text-red-400" : "text-green-400"}`}>
+            {sheetsResult}
+          </p>
+        )}
       </section>
 
       <section className="bg-gray-900 border border-gray-800 rounded-lg p-6 space-y-4">

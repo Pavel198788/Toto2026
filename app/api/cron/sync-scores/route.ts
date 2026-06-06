@@ -5,6 +5,7 @@ import type { Stage as PrismaStage, MatchStatus } from "@prisma/client"
 import { prisma } from "@/lib/db"
 import { getTodayMatches, getAllMatches, mapStage, mapStatus } from "@/lib/football-api"
 import { calculatePoints } from "@/lib/scoring"
+import { syncToGoogleSheets } from "@/lib/google-sheets"
 import type { Stage } from "@/lib/scoring"
 
 export async function GET(req: NextRequest) {
@@ -87,6 +88,9 @@ export async function GET(req: NextRequest) {
 
   // Recalculate bonus predictions based on known semi/finalists
   await recalculateBonusPoints()
+
+  // Sync to Google Sheets (fire-and-forget, don't block response)
+  syncToGoogleSheets().catch(() => {})
 
   return NextResponse.json({ success: true, updatedMatches })
 }
