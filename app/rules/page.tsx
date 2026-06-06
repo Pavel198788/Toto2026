@@ -115,15 +115,15 @@ export default function RulesPage() {
           <tbody className="divide-y divide-[#1a1500]">
             <tr>
               <td className="py-3">Каждый правильный полуфиналист</td>
-              <td className="py-3 text-right font-bold text-green-400">+8</td>
+              <td className="py-3 text-right font-bold text-green-400">+10</td>
             </tr>
             <tr>
               <td className="py-3">Каждый правильный финалист</td>
-              <td className="py-3 text-right font-bold text-green-400">+15</td>
+              <td className="py-3 text-right font-bold text-green-400">+20</td>
             </tr>
             <tr>
               <td className="py-3">Правильный чемпион</td>
-              <td className="py-3 text-right font-bold text-green-400">+30</td>
+              <td className="py-3 text-right font-bold text-green-400">+40</td>
             </tr>
           </tbody>
         </table>

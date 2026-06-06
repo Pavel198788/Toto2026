@@ -104,7 +104,7 @@ async function recalculateBonusPoints() {
     await Promise.all(preds.map(pred =>
       prisma.bonusPrediction.update({
         where: { id: pred.id },
-        data: { points: semifinalists.has(pred.team) ? 8 : 0 },
+        data: { points: semifinalists.has(pred.team) ? 10 : 0 },
       })
     ))
   }
@@ -116,7 +116,7 @@ async function recalculateBonusPoints() {
     await Promise.all(finalistPreds.map(pred =>
       prisma.bonusPrediction.update({
         where: { id: pred.id },
-        data: { points: finalists.has(pred.team) ? 15 : 0 },
+        data: { points: finalists.has(pred.team) ? 20 : 0 },
       })
     ))
   }
@@ -128,7 +128,7 @@ async function recalculateBonusPoints() {
     await Promise.all(championPreds.map(pred =>
       prisma.bonusPrediction.update({
         where: { id: pred.id },
-        data: { points: pred.team === champion ? 30 : 0 },
+        data: { points: pred.team === champion ? 40 : 0 },
       })
     ))
   }
