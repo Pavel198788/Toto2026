@@ -16,20 +16,20 @@ export async function Navbar() {
               <Link href="/matches" className="text-gray-300 hover:text-white transition-colors">
                 Матчи
               </Link>
-              <Link href="/standings" className="text-gray-300 hover:text-white transition-colors">
-                Группы
-              </Link>
-              <Link href="/bonus" className="text-gray-300 hover:text-white transition-colors">
-                Бонус
-              </Link>
               <Link href="/leaderboard" className="text-gray-300 hover:text-white transition-colors">
                 Рейтинг
+              </Link>
+              <Link href="/profile" className="text-gray-300 hover:text-white transition-colors">
+                Мои прогнозы
+              </Link>
+              <Link href="/standings" className="text-gray-300 hover:text-white transition-colors">
+                Группы
               </Link>
               <Link href="/grid" className="text-gray-300 hover:text-white transition-colors">
                 Сетка
               </Link>
-              <Link href="/profile" className="text-gray-300 hover:text-white transition-colors">
-                Мои прогнозы
+              <Link href="/bonus" className="text-gray-300 hover:text-white transition-colors">
+                Бонус
               </Link>
               <Link href="/rules" className="text-gray-300 hover:text-white transition-colors">
                 Правила

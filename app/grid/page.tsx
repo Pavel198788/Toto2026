@@ -19,6 +19,7 @@ export default async function GridPage() {
   })
 
   const participants = await prisma.user.findMany({
+    where: { isAdmin: false },
     select: { id: true, name: true },
     orderBy: { name: "asc" },
   })

@@ -130,13 +130,26 @@ export default function RulesPage() {
       </section>
 
       {/* Победители */}
-      <section className="bg-gray-900 border border-gray-800 rounded-lg p-6 space-y-3">
-        <h2 className="text-lg font-semibold text-yellow-400">Определение победителей</h2>
-        <p className="text-sm text-gray-300">
-          Призовой фонд делится между топ-3 в соотношении <span className="text-white font-semibold">5 : 3 : 2</span>.
+      <section className="bg-gray-900 border border-gray-800 rounded-lg p-6 space-y-4">
+        <h2 className="text-lg font-semibold text-yellow-400">Призовой фонд</h2>
+        <div className="space-y-3">
+          {[
+            { place: "🥇 1-е место", pct: "55%", color: "text-yellow-400" },
+            { place: "🥈 2-е место", pct: "25%", color: "text-gray-300" },
+            { place: "🥉 3-е место", pct: "10%", color: "text-orange-400" },
+            { place: "🎯 Лучший в плей-офф", pct: "10%", color: "text-green-400" },
+          ].map(({ place, pct, color }) => (
+            <div key={place} className="flex items-center justify-between">
+              <span className="text-sm text-gray-300">{place}</span>
+              <span className={`text-lg font-bold ${color}`}>{pct}</span>
+            </div>
+          ))}
+        </div>
+        <p className="text-xs text-gray-500 bg-gray-800 rounded p-3">
+          <span className="text-gray-300 font-medium">Лучший в плей-офф</span> — участник, угадавший наибольшее количество матчей на стадии плей-офф (1/8, 1/4, 1/2, финал). При равенстве — больше точных счётов.
         </p>
         <p className="text-sm text-gray-400">
-          При равенстве очков: больше 100%-ных прогнозов → больше очков без учёта премиальных → делят поровну.
+          При равенстве очков в общем зачёте: больше 100%-ных прогнозов → больше очков без учёта премиальных → делят поровну.
         </p>
       </section>
     </div>

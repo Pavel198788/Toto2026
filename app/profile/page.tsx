@@ -81,6 +81,23 @@ export default async function ProfilePage() {
   const initials = (session.user.name ?? "?").charAt(0).toUpperCase()
   const leaderTotal = rankedUsers[0]?.total ?? 1
 
+  const homeWins = myPredictions.filter(p => p.homeScore > p.awayScore).length
+  const draws = myPredictions.filter(p => p.homeScore === p.awayScore).length
+  const awayWins = myPredictions.filter(p => p.homeScore < p.awayScore).length
+
+  const bestPred = finished.length > 0
+    ? finished.reduce((best, p) => ((p.points ?? 0) > (best.points ?? 0) ? p : best), finished[0])
+    : null
+
+  const avgPredGoals = myPredictions.length > 0
+    ? (myPredictions.reduce((s, p) => s + p.homeScore + p.awayScore, 0) / myPredictions.length).toFixed(1)
+    : null
+  const avgRealGoals = finished.length > 0
+    ? (finished.reduce((s, p) => s + (p.match.homeScore ?? 0) + (p.match.awayScore ?? 0), 0) / finished.length).toFixed(1)
+    : null
+
+  const last5 = finished.slice(-5)
+
   return (
     <div className="space-y-6 pb-8">
       {/* 1. ШАПКА */}
@@ -107,7 +124,13 @@ export default async function ProfilePage() {
         </div>
         <div className="bg-gray-900 border border-gray-800 rounded-lg p-4 text-center">
           <p className="text-3xl font-bold text-green-400">{accuracy}%</p>
-          <p className="text-sm text-gray-400 mt-1">Точность угаданий</p>
+          <p className="text-sm text-gray-400 mt-1">Угадал исход</p>
+          {finished.length > 0 && (
+            <div className="flex justify-center gap-3 mt-2 text-xs">
+              <span className="text-green-400 font-medium">{guessed} ✓</span>
+              <span className="text-red-400 font-medium">{finished.length - guessed} ✗</span>
+            </div>
+          )}
         </div>
         <div className="bg-gray-900 border border-gray-800 rounded-lg p-4 text-center">
           <p className="text-3xl font-bold text-orange-400">🔥 {streak}</p>
@@ -211,7 +234,7 @@ export default async function ProfilePage() {
         <div className="grid grid-cols-2 gap-3">
           {/* 5а. 100% попаданий */}
           <div className="bg-gray-900 border border-gray-800 rounded-lg p-4">
-            <p className="text-xs text-gray-400 mb-2">100% ПОПАДАНИЯ</p>
+            <p className="text-xs text-gray-400 mb-2">ТОЧНЫЙ СЧЁТ</p>
             <div className="flex items-baseline gap-1 mb-2">
               <span className="text-2xl font-bold text-green-400">{exactCount}</span>
               <span className="text-sm text-gray-500">из {finished.length}</span>
@@ -225,40 +248,7 @@ export default async function ProfilePage() {
             <p className="text-xs text-gray-500 mt-1">точных счётов</p>
           </div>
 
-          {/* 5б. Динамика */}
-          <div className="bg-gray-900 border border-gray-800 rounded-lg p-4">
-            <p className="text-xs text-gray-400 mb-2">ДИНАМИКА</p>
-            <div className="flex gap-0.5 items-end h-8 mb-1">
-              {STAGE_ORDER.map(stage => {
-                const pts = pointsByStage[stage] ?? 0
-                const h = pts > 0 ? Math.max(4, Math.round(pts / maxStagePoints * 100)) : 3
-                return (
-                  <div
-                    key={stage}
-                    className={`flex-1 rounded-sm ${pts > 0 ? "bg-yellow-500" : "bg-gray-700"}`}
-                    style={{ height: `${h}%` }}
-                  />
-                )
-              })}
-            </div>
-            <div className="flex gap-0.5">
-              {STAGE_ORDER.map(stage => {
-                const pts = pointsByStage[stage] ?? 0
-                const isBest = pts > 0 && pts === maxStagePoints
-                return (
-                  <div
-                    key={stage}
-                    className={`flex-1 text-center truncate ${isBest ? "text-yellow-400 font-bold" : "text-gray-500"}`}
-                    style={{ fontSize: "7px" }}
-                  >
-                    {STAGE_LABELS[stage]}<br />{pts > 0 ? pts : "—"}
-                  </div>
-                )
-              })}
-            </div>
-          </div>
-
-          {/* 5в. Сравнение с группой */}
+          {/* 5б. Сравнение с группой */}
           {finished.length > 0 && (
             <div className="bg-gray-900 border border-gray-800 rounded-lg p-4">
               <p className="text-xs text-gray-400 mb-3">СРАВНЕНИЕ С ГРУППОЙ</p>
@@ -298,6 +288,97 @@ export default async function ProfilePage() {
               </div>
               <div className="bg-gray-800 rounded px-2 py-1 text-xs text-gray-300">
                 Совпадают <span className="font-bold text-white">{twin.matchCount}</span> из {myPredictions.length} прогнозов
+              </div>
+            </div>
+          )}
+
+          {/* 5д. Любимый исход */}
+          {myPredictions.length > 0 && (
+            <div className="bg-gray-900 border border-gray-800 rounded-lg p-4">
+              <p className="text-xs text-gray-400 mb-3">ЛЮБИМЫЙ ИСХОД</p>
+              <div className="space-y-2">
+                {[
+                  { label: "Хозяева", count: homeWins, color: "bg-blue-500" },
+                  { label: "Ничья", count: draws, color: "bg-yellow-500" },
+                  { label: "Гости", count: awayWins, color: "bg-purple-500" },
+                ].map(({ label, count, color }) => (
+                  <div key={label}>
+                    <div className="flex justify-between text-xs mb-1">
+                      <span className="text-gray-400">{label}</span>
+                      <span className="text-gray-300 font-medium">{count}</span>
+                    </div>
+                    <div className="bg-gray-700 rounded-full h-1.5">
+                      <div
+                        className={`${color} h-1.5 rounded-full`}
+                        style={{ width: `${Math.round(count / myPredictions.length * 100)}%` }}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* 5е. Лучший матч */}
+          {bestPred && (bestPred.points ?? 0) > 0 && (
+            <div className="bg-gray-900 border border-gray-800 rounded-lg p-4">
+              <p className="text-xs text-gray-400 mb-3">ЛУЧШИЙ МАТЧ</p>
+              <p className="text-xs text-gray-300 leading-tight mb-2">
+                {teamFlag(bestPred.match.homeTeam)} {bestPred.match.homeTeam}<br />
+                — {teamFlag(bestPred.match.awayTeam)} {bestPred.match.awayTeam}
+              </p>
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-gray-400">
+                  {bestPred.homeScore}:{bestPred.awayScore}
+                </span>
+                <span className="text-xl font-bold text-green-400">+{bestPred.points}</span>
+              </div>
+            </div>
+          )}
+
+          {/* 5ж. Среднее голов */}
+          {avgPredGoals !== null && (
+            <div className="bg-gray-900 border border-gray-800 rounded-lg p-4">
+              <p className="text-xs text-gray-400 mb-3">СРЕДНЕЕ ГОЛОВ</p>
+              <div className="space-y-2">
+                <div className="flex justify-between items-center">
+                  <span className="text-xs text-gray-400">Твои прогнозы</span>
+                  <span className="text-lg font-bold text-yellow-400">{avgPredGoals}</span>
+                </div>
+                {avgRealGoals !== null && (
+                  <div className="flex justify-between items-center">
+                    <span className="text-xs text-gray-400">Реальные матчи</span>
+                    <span className="text-lg font-bold text-gray-300">{avgRealGoals}</span>
+                  </div>
+                )}
+              </div>
+              <p className="text-xs text-gray-600 mt-2">голов за матч в среднем</p>
+            </div>
+          )}
+
+          {/* 5з. Форма (последние 5) */}
+          {last5.length > 0 && (
+            <div className="bg-gray-900 border border-gray-800 rounded-lg p-4">
+              <p className="text-xs text-gray-400 mb-3">ФОРМА (последние {last5.length})</p>
+              <div className="flex gap-2 justify-center">
+                {last5.map((p, i) => {
+                  const pts = p.points ?? 0
+                  const isExact = EXACT_POINTS.has(pts)
+                  const isCorrect = pts > 0 && !isExact
+                  return (
+                    <div
+                      key={i}
+                      title={`${p.match.homeTeam} — ${p.match.awayTeam}: ${pts > 0 ? `+${pts}` : "0"}`}
+                      className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${
+                        isExact ? "bg-green-600 text-white" :
+                        isCorrect ? "bg-yellow-600 text-black" :
+                        "bg-gray-700 text-gray-500"
+                      }`}
+                    >
+                      {pts > 0 ? `+${pts}` : "0"}
+                    </div>
+                  )
+                })}
               </div>
             </div>
           )}
