@@ -36,7 +36,7 @@ export function calculatePoints(input: ScoringInput): number {
   }
 
   if (stage === "FINAL") {
-    if (isExactScore && isCorrectWinner) return 38
+    if (isExactScore && isCorrectWinner) return 35
     let pts = 0
     if (isCorrectOutcome) pts += Math.max(0, 15 - goalError(predictedHome, predictedAway, actualHome, actualAway))
     if (isCorrectWinner) pts += 15
