@@ -145,10 +145,15 @@ export default async function MatchesPage({
                   {/* Time */}
                   <span className="w-12 text-sm text-gray-500 shrink-0 font-mono">{timeStr}</span>
 
-                  {/* Stage badge */}
-                  <Badge variant="outline" className="hidden sm:inline-flex shrink-0 text-xs border-gray-700 text-gray-400 w-20 justify-center">
-                    {stageLabel}
-                  </Badge>
+                  {/* Stage badge + city */}
+                  <div className="hidden sm:flex flex-col items-start shrink-0 w-20 gap-0.5">
+                    <Badge variant="outline" className="text-xs border-gray-700 text-gray-400 w-full justify-center">
+                      {stageLabel}
+                    </Badge>
+                    {match.city && (
+                      <span className="text-xs text-gray-600 truncate w-full text-center">{match.city}</span>
+                    )}
+                  </div>
 
                   {/* Teams + score */}
                   <div className="flex-1 flex items-center gap-2 min-w-0">
