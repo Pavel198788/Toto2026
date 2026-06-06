@@ -85,5 +85,52 @@ export async function GET(req: NextRequest) {
     }
   }
 
+  // Recalculate bonus predictions based on known semi/finalists
+  await recalculateBonusPoints()
+
   return NextResponse.json({ success: true, updatedMatches })
+}
+
+async function recalculateBonusPoints() {
+  // Semifinalists = all teams that played in SEMIFINAL stage matches
+  const semifinalMatches = await prisma.match.findMany({ where: { stage: "SEMIFINAL" } })
+  const semifinalists = new Set(semifinalMatches.flatMap((m) => [m.homeTeam, m.awayTeam]))
+
+  if (semifinalists.size > 0) {
+    const preds = await prisma.bonusPrediction.findMany({ where: { type: "SEMIFINAL" } })
+    for (const pred of preds) {
+      await prisma.bonusPrediction.update({
+        where: { id: pred.id },
+        data: { points: semifinalists.has(pred.team) ? 8 : 0 },
+      })
+    }
+  }
+
+  // Finalists = teams that played in the FINAL match
+  const finalMatch = await prisma.match.findFirst({ where: { stage: "FINAL" } })
+  if (finalMatch) {
+    const finalists = new Set([finalMatch.homeTeam, finalMatch.awayTeam])
+    const finalistPreds = await prisma.bonusPrediction.findMany({ where: { type: "FINALIST" } })
+    for (const pred of finalistPreds) {
+      await prisma.bonusPrediction.update({
+        where: { id: pred.id },
+        data: { points: finalists.has(pred.team) ? 15 : 0 },
+      })
+    }
+  }
+
+  // Champion = winner of the FINAL match
+  const finishedFinal = await prisma.match.findFirst({
+    where: { stage: "FINAL", status: "FINISHED" },
+  })
+  if (finishedFinal?.winner) {
+    const champion = finishedFinal.winner
+    const championPreds = await prisma.bonusPrediction.findMany({ where: { type: "CHAMPION" } })
+    for (const pred of championPreds) {
+      await prisma.bonusPrediction.update({
+        where: { id: pred.id },
+        data: { points: pred.team === champion ? 30 : 0 },
+      })
+    }
+  }
 }

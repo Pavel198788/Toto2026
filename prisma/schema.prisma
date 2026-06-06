@@ -57,7 +57,7 @@ model BonusPrediction {
   points Int?
   user   User      @relation(fields: [userId], references: [id])
 
-  @@unique([userId, type])
+  @@unique([userId, type, team])
 }
 
 model PasswordResetToken {

@@ -16,6 +16,9 @@ export async function Navbar() {
               <Link href="/matches" className="text-gray-300 hover:text-white transition-colors">
                 Матчи
               </Link>
+              <Link href="/bonus" className="text-gray-300 hover:text-white transition-colors">
+                Бонус
+              </Link>
               <Link href="/leaderboard" className="text-gray-300 hover:text-white transition-colors">
                 Рейтинг
               </Link>
