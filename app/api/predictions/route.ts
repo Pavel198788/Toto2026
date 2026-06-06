@@ -34,6 +34,10 @@ export async function POST(req: NextRequest) {
   if (match.status !== "SCHEDULED") {
     return NextResponse.json({ error: "Predictions closed for this match" }, { status: 422 })
   }
+  const cutoff = new Date(match.kickoff.getTime() - 3 * 60 * 60 * 1000)
+  if (new Date() >= cutoff) {
+    return NextResponse.json({ error: "Predictions closed 3 hours before kickoff" }, { status: 422 })
+  }
 
   try {
     const prediction = await prisma.prediction.create({

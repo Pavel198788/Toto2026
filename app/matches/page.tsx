@@ -136,7 +136,8 @@ export default async function MatchesPage({
 
               const isFinished = match.status === "FINISHED"
               const isLive = match.status === "IN_PLAY" || match.status === "PAUSED"
-              const canPredict = match.status === "SCHEDULED" && !(match.id in userPredictions)
+              const cutoff = new Date(match.kickoff.getTime() - 3 * 60 * 60 * 1000)
+              const canPredict = match.status === "SCHEDULED" && !(match.id in userPredictions) && new Date() < cutoff
               const pred = userPredictions[match.id]
 
               const outcome = (h: number, a: number) => h > a ? "H" : h < a ? "A" : "D"
