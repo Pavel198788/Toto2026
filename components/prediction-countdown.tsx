@@ -11,7 +11,7 @@ export function PredictionCountdown({ cutoff }: { cutoff: number }) {
   }, [cutoff])
 
   if (diff <= 0) return (
-    <span className="text-[9px] text-red-500 tracking-widest whitespace-nowrap">ЗАКРЫТО</span>
+    <span className="text-[inherit] text-red-500 tracking-widest whitespace-nowrap">ЗАКРЫТО</span>
   )
 
   const d = Math.floor(diff / 86400000)
@@ -22,7 +22,7 @@ export function PredictionCountdown({ cutoff }: { cutoff: number }) {
   const pad = (n: number) => String(n).padStart(2, "0")
 
   return (
-    <span className="text-[9px] font-mono tracking-wider whitespace-nowrap text-yellow-600">
+    <span className="text-[inherit] font-mono tracking-wider whitespace-nowrap text-yellow-600">
       {d > 0 ? `${d}д ${h}:${pad(m)}:${pad(s)}` : h > 0 ? `${h}:${pad(m)}:${pad(s)}` : `${m}:${pad(s)}`}
     </span>
   )

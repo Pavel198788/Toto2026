@@ -54,7 +54,7 @@ export default async function MatchPage({ params }: { params: Promise<{ id: stri
           до {kickoff.toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit", timeZone: "Europe/Moscow" })}
         </p>
         {match.status === "SCHEDULED" && !existingPrediction && (
-          <p className="text-gray-500 mt-1 text-sm flex items-center justify-center gap-2">
+          <p className="text-gray-500 mt-1 text-[21px] flex items-center justify-center gap-2">
             Прогноз закрывается через{" "}
             <PredictionCountdown cutoff={cutoff.getTime()} />
           </p>
