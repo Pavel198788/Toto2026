@@ -65,14 +65,25 @@ const STATUS_MAP: Record<string, string> = {
   PAUSED: "PAUSED",
   FINISHED: "FINISHED",
   POSTPONED: "POSTPONED",
+  CANCELLED: "POSTPONED",
+  SUSPENDED: "POSTPONED",
+  AWARDED: "FINISHED",
 }
 
 export function mapStage(fdStage: string): string {
-  return STAGE_MAP[fdStage] ?? "GROUP"
+  const mapped = STAGE_MAP[fdStage]
+  if (!mapped) {
+    console.warn(`[football-api] Unknown stage: "${fdStage}" — defaulting to GROUP`)
+  }
+  return mapped ?? "GROUP"
 }
 
 export function mapStatus(fdStatus: string): string {
-  return STATUS_MAP[fdStatus] ?? "SCHEDULED"
+  const mapped = STATUS_MAP[fdStatus]
+  if (!mapped) {
+    console.warn(`[football-api] Unknown status: "${fdStatus}" — defaulting to SCHEDULED`)
+  }
+  return mapped ?? "SCHEDULED"
 }
 
 // Lookup table: partial venue name (lowercase) → city + country in Russian

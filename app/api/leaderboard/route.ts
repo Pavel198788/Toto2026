@@ -34,7 +34,7 @@ export async function GET() {
         .filter((p) => p.match.stage === "GROUP")
         .reduce((s, p) => s + (p.points ?? 0), 0)
       const exactCount = user.predictions.filter((p) =>
-        p.points === 11 || p.points === 22 || p.points === 32
+        p.points === 12 || p.points === 25 || p.points === 35
       ).length
 
       return {

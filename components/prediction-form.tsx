@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useRef, useState } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -34,6 +34,7 @@ export function PredictionForm({ matchId, homeTeam, awayTeam, isPlayoff }: Predi
   const [winner, setWinner] = useState("")
   const [showConfirm, setShowConfirm] = useState(false)
   const [submitting, setSubmitting] = useState(false)
+  const submittingRef = useRef(false)
   const [error, setError] = useState("")
 
   function handleSubmitClick(e: React.FormEvent) {
@@ -44,6 +45,8 @@ export function PredictionForm({ matchId, homeTeam, awayTeam, isPlayoff }: Predi
   }
 
   async function handleConfirm() {
+    if (submittingRef.current) return
+    submittingRef.current = true
     setSubmitting(true)
     setError("")
 
@@ -58,6 +61,7 @@ export function PredictionForm({ matchId, homeTeam, awayTeam, isPlayoff }: Predi
       }),
     })
 
+    submittingRef.current = false
     setSubmitting(false)
 
     if (res.ok) {
