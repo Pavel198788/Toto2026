@@ -48,10 +48,9 @@ export default async function MatchPage({ params }: { params: Promise<{ id: stri
           {match.homeTeam} — {match.awayTeam}
         </h1>
         <p className="text-gray-400 mt-2">
-          {kickoff.toLocaleDateString("ru-RU", {
-            weekday: "long", day: "numeric", month: "long",
-          })}{" "}
-          до {kickoff.toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit", timeZone: "Europe/Moscow" })}
+          Время игры: {kickoff.toLocaleDateString("ru-RU", {
+            day: "numeric", month: "long", timeZone: "Europe/Moscow",
+          })}, {kickoff.toLocaleTimeString("ru-RU", { hour: "numeric", minute: "2-digit", timeZone: "Europe/Moscow" })}
         </p>
         {match.status === "SCHEDULED" && !existingPrediction && (
           <p className="mt-1 text-[18px] flex items-center justify-center gap-2">
