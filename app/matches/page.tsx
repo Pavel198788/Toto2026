@@ -3,7 +3,6 @@ import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/db"
 import { MatchesTabs } from "@/components/matches-tabs"
 import { teamFlag } from "@/lib/flags"
-import { PredictionCountdown } from "@/components/prediction-countdown"
 
 const STAGE_LABELS: Record<string, string> = {
   GROUP: "Группа",
@@ -221,9 +220,6 @@ export default async function MatchesPage({
                     )}
                     {!isFinished && !isLive && pred && (
                       <span className="text-lg font-black text-yellow-400">📝 {pred.homeScore}:{pred.awayScore}</span>
-                    )}
-                    {match.status === "SCHEDULED" && !(match.id in userPredictions) && (
-                      <PredictionCountdown cutoff={cutoff.getTime()} />
                     )}
                     {canPredict && session && (
                       <Link href={`/matches/${match.id}`}>
