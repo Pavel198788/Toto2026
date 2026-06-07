@@ -109,9 +109,9 @@ export default async function MatchesPage({
 
       <MatchesTabs tabs={tabs} activeTab={tab} />
 
-      <div className="flex items-center gap-3 border-y border-[#1a1500] py-3 -mx-4 px-4 sm:-mx-6 sm:px-6 bg-[#0d0d0d]">
+      <div className="flex items-center gap-3 border-y border-[#1a1500] py-3 bg-[#0d0d0d]">
         <span className="text-lg shrink-0">⏱️</span>
-        <p className="text-xs text-gray-500">
+        <p className="text-xs text-gray-500 flex-1">
           Приём прогнозов на матч <span className="text-gray-300 font-semibold">закрывается за 3 часа до начала</span>. После этого прогноз поставить нельзя.
         </p>
       </div>
