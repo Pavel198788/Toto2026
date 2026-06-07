@@ -3,6 +3,7 @@ import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/db"
 import { PredictionForm } from "@/components/prediction-form"
 import { Badge } from "@/components/ui/badge"
+import { PredictionCountdown } from "@/components/prediction-countdown"
 
 const STAGE_LABELS: Record<string, string> = {
   GROUP: "Групповой этап",
@@ -32,6 +33,7 @@ export default async function MatchPage({ params }: { params: Promise<{ id: stri
     : null
 
   const kickoff = new Date(match.kickoff)
+  const cutoff = new Date(kickoff.getTime() - 3 * 60 * 60 * 1000)
   const stageLabel = match.stage === "GROUP" && match.group
     ? `Группа ${match.group}`
     : STAGE_LABELS[match.stage] ?? match.stage
@@ -51,6 +53,12 @@ export default async function MatchPage({ params }: { params: Promise<{ id: stri
           })}{" "}
           до {kickoff.toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit", timeZone: "Europe/Moscow" })}
         </p>
+        {match.status === "SCHEDULED" && !existingPrediction && (
+          <p className="text-gray-500 mt-1 text-sm flex items-center justify-center gap-2">
+            Прогноз закрывается через{" "}
+            <PredictionCountdown cutoff={cutoff.getTime()} />
+          </p>
+        )}
       </div>
 
       {match.status === "FINISHED" && (

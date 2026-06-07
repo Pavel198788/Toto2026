@@ -14,17 +14,16 @@ export function PredictionCountdown({ cutoff }: { cutoff: number }) {
     <span className="text-[9px] text-red-500 tracking-widest whitespace-nowrap">ЗАКРЫТО</span>
   )
 
-  const h = Math.floor(diff / 3600000)
+  const d = Math.floor(diff / 86400000)
+  const h = Math.floor((diff % 86400000) / 3600000)
   const m = Math.floor((diff % 3600000) / 60000)
   const s = Math.floor((diff % 60000) / 1000)
 
   const pad = (n: number) => String(n).padStart(2, "0")
 
-  if (h >= 24) return null
-
   return (
     <span className="text-[9px] font-mono tracking-wider whitespace-nowrap text-yellow-600">
-      {h > 0 ? `${h}:${pad(m)}:${pad(s)}` : `${m}:${pad(s)}`}
+      {d > 0 ? `${d}д ${h}:${pad(m)}:${pad(s)}` : h > 0 ? `${h}:${pad(m)}:${pad(s)}` : `${m}:${pad(s)}`}
     </span>
   )
 }
