@@ -46,7 +46,8 @@ export default async function LeaderboardPage() {
     })
     .sort((a, b) => b.total - a.total || b.exactCount - a.exactCount)
 
-  const totalPrize = users.length * 10000
+  const entryFee = parseInt(process.env.ENTRY_FEE ?? "10000")
+  const totalPrize = users.length * entryFee
   const fmt = (n: number) => n.toLocaleString("ru-RU") + " ₽"
 
   return (
@@ -60,7 +61,7 @@ export default async function LeaderboardPage() {
           <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-yellow-400/60 to-transparent" />
           <p className="text-[9px] tracking-[4px] text-[#7a6000] uppercase mb-2">Призовой фонд · ЧМ-2026</p>
           <p className="text-4xl font-black text-yellow-400 tracking-tight" style={{ textShadow: "0 0 40px rgba(250,204,21,0.3)" }}>{fmt(totalPrize)}</p>
-          <p className="text-[9px] tracking-[2px] text-[#5a4500] mt-1">{users.length} участников × 10 000 ₽</p>
+          <p className="text-[9px] tracking-[2px] text-[#5a4500] mt-1">{users.length} участников × {fmt(entryFee)}</p>
         </div>
 
         {/* Строки */}
