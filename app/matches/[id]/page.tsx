@@ -49,7 +49,7 @@ export default async function MatchPage({ params }: { params: Promise<{ id: stri
           {kickoff.toLocaleDateString("ru-RU", {
             weekday: "long", day: "numeric", month: "long",
           })}{" "}
-          в {kickoff.toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" })}
+          до {kickoff.toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit", timeZone: "Europe/Moscow" })}
         </p>
       </div>
 
