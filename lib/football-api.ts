@@ -1,8 +1,5 @@
-// lib/football-api.ts — ESPN unofficial API (без ключа, реальные счёты)
-const ESPN_BASE = "https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world"
-// ЧМ-2026: 11 июня — 19 июля 2026
-const WC_START = "20260611"
-const WC_END   = "20260719"
+// lib/football-api.ts — sstats.net API (без ключа, 300 req/min)
+const SSTATS_BASE = "https://api.sstats.net"
 
 export interface FDMatch {
   id: number
@@ -19,106 +16,93 @@ export interface FDMatch {
   venue?: string | null
 }
 
-interface ESPNEvent {
-  id: string
+interface SstatsGame {
+  id: number
   date: string
-  season: { slug: string }
-  competitions: [ESPNComp]
-}
-interface ESPNComp {
-  status: { type: { name: string; state: string; completed: boolean } }
-  competitors: ESPNCompetitor[]
-  venue?: { fullName?: string; address?: { city?: string; country?: string } }
-}
-interface ESPNCompetitor {
-  homeAway: "home" | "away"
-  score: string
-  winner?: boolean
-  team: { displayName: string; shortDisplayName: string }
+  status: number
+  homeResult: number | null
+  awayResult: number | null
+  homeFTResult: number | null
+  awayFTResult: number | null
+  homeTeam: { id: number; name: string }
+  awayTeam: { id: number; name: string }
+  roundName: string
 }
 
-async function fetchESPN(path: string): Promise<{ events?: ESPNEvent[] }> {
-  const res = await fetch(`${ESPN_BASE}${path}`, { next: { revalidate: 0 } })
-  if (!res.ok) throw new Error(`ESPN API ${res.status}: ${path}`)
+async function fetchSstats(path: string): Promise<{ data?: SstatsGame[] }> {
+  const res = await fetch(`${SSTATS_BASE}${path}`, { next: { revalidate: 0 } })
+  if (!res.ok) throw new Error(`sstats API ${res.status}: ${path}`)
   return res.json()
 }
 
-function parseScore(s: string): number | null {
-  const n = parseInt(s, 10)
-  return isNaN(n) ? null : n
+// status: 2=NotStarted 3=1stHalf 4=2ndHalf 5=HalfTime 6=ET 7=Penalties 8=Finished 9=Postponed
+function sstatsStatus(code: number): string {
+  if (code === 8) return "FINISHED"
+  if (code === 5) return "PAUSED"
+  if ([3, 4, 6, 7].includes(code)) return "IN_PLAY"
+  if (code === 9) return "POSTPONED"
+  return "SCHEDULED"
 }
 
-// Матчи с TBD командами (плей-офф до определения участников)
+function sstatsStage(roundName: string): string {
+  const r = roundName.toLowerCase()
+  if (r.includes("group")) return "GROUP_STAGE"
+  if (r.includes("round of 32")) return "ROUND_OF_32"
+  if (r.includes("round of 16")) return "ROUND_OF_16"
+  if (r.includes("quarter")) return "QUARTER_FINALS"
+  if (r.includes("semi")) return "SEMI_FINALS"
+  if (r.includes("3rd") || r.includes("third place")) return "THIRD_PLACE"
+  if (r.includes("final")) return "FINAL"
+  return "GROUP_STAGE"
+}
+
 const TBD_RE = /\b(place|winner|loser|group [a-z]\b)/i
 
-function toFDMatch(event: ESPNEvent): FDMatch | null {
-  const comp = event.competitions[0]
-  const home = comp.competitors.find(c => c.homeAway === "home")
-  const away = comp.competitors.find(c => c.homeAway === "away")
-  if (!home || !away) return null
+function toFDMatch(g: SstatsGame): FDMatch | null {
+  if (!g.homeTeam?.name || !g.awayTeam?.name) return null
+  if (TBD_RE.test(g.homeTeam.name) || TBD_RE.test(g.awayTeam.name)) return null
 
-  // Пропускаем матчи с TBD командами
-  if (TBD_RE.test(home.team.displayName) || TBD_RE.test(away.team.displayName)) return null
+  const status = sstatsStatus(g.status)
+  const isStarted = status !== "SCHEDULED"
 
-  const state = comp.status.type.state // "pre" | "in" | "post"
-  const isLiveOrDone = state === "in" || state === "post"
-
-  const homeScore = isLiveOrDone ? parseScore(home.score) : null
-  const awayScore = isLiveOrDone ? parseScore(away.score) : null
+  const homeScore = isStarted
+    ? (status === "FINISHED" ? g.homeFTResult : g.homeResult)
+    : null
+  const awayScore = isStarted
+    ? (status === "FINISHED" ? g.awayFTResult : g.awayResult)
+    : null
 
   let winner: "HOME_TEAM" | "AWAY_TEAM" | "DRAW" | null = null
-  if (comp.status.type.completed && homeScore !== null && awayScore !== null) {
-    if (home.winner) winner = "HOME_TEAM"
-    else if (away.winner) winner = "AWAY_TEAM"
+  if (status === "FINISHED" && homeScore !== null && awayScore !== null) {
+    if (homeScore > awayScore) winner = "HOME_TEAM"
+    else if (awayScore > homeScore) winner = "AWAY_TEAM"
     else winner = "DRAW"
   }
 
   return {
-    id: parseInt(event.id, 10),
-    homeTeam: { name: home.team.displayName, shortName: home.team.shortDisplayName },
-    awayTeam: { name: away.team.displayName, shortName: away.team.shortDisplayName },
-    status: espnStatus(comp.status.type.name),
-    stage: espnStage(event.season.slug),
-    group: null, // ESPN не предоставляет букву группы; группа сохраняется из БД
-    utcDate: event.date,
+    id: g.id,
+    homeTeam: { name: g.homeTeam.name, shortName: g.homeTeam.name },
+    awayTeam: { name: g.awayTeam.name, shortName: g.awayTeam.name },
+    status,
+    stage: sstatsStage(g.roundName),
+    group: null,
+    utcDate: g.date,
     score: { winner, fullTime: { home: homeScore, away: awayScore } },
-    venue: comp.venue?.fullName ?? null,
-  }
-}
-
-function espnStatus(name: string): string {
-  if (["STATUS_FULL_TIME", "STATUS_FINAL", "STATUS_FULL_PEN", "STATUS_FULL_ET"].includes(name)) return "FINISHED"
-  if (["STATUS_IN_PROGRESS", "STATUS_EXTRA_TIME", "STATUS_PENALTY", "STATUS_FIRST_HALF", "STATUS_SECOND_HALF"].includes(name)) return "IN_PLAY"
-  if (name === "STATUS_HALFTIME") return "PAUSED"
-  if (["STATUS_POSTPONED", "STATUS_CANCELED", "STATUS_ABANDONED", "STATUS_SUSPENDED"].includes(name)) return "POSTPONED"
-  return "SCHEDULED"
-}
-
-function espnStage(slug: string): string {
-  switch (slug) {
-    case "group-stage":   return "GROUP_STAGE"
-    case "round-of-32":  return "ROUND_OF_32"
-    case "round-of-16":  return "ROUND_OF_16"
-    case "quarterfinals": return "QUARTER_FINALS"
-    case "semifinals":   return "SEMI_FINALS"
-    case "3rd-place-match": return "THIRD_PLACE"
-    case "final":        return "FINAL"
-    default:             return "GROUP_STAGE"
+    venue: null,
   }
 }
 
 export async function getAllMatches(): Promise<FDMatch[]> {
-  const data = await fetchESPN(`/scoreboard?dates=${WC_START}-${WC_END}&limit=200`)
-  return (data.events ?? []).map(toFDMatch).filter((m): m is FDMatch => m !== null)
+  const data = await fetchSstats("/games/list?LeagueId=1&Year=2026")
+  return (data.data ?? []).map(toFDMatch).filter((m): m is FDMatch => m !== null)
 }
 
 export async function getTodayMatches(): Promise<FDMatch[]> {
-  const today = new Date().toISOString().slice(0, 10).replace(/-/g, "")
-  const data = await fetchESPN(`/scoreboard?dates=${today}`)
-  return (data.events ?? []).map(toFDMatch).filter((m): m is FDMatch => m !== null)
+  const data = await fetchSstats("/games/list?LeagueId=1&today=true")
+  return (data.data ?? []).map(toFDMatch).filter((m): m is FDMatch => m !== null)
 }
 
-// Оставляем для совместимости с sync-matches.ts
+// Совместимость с sync-matches.ts
 const STAGE_MAP: Record<string, string> = {
   GROUP_STAGE:    "GROUP",
   ROUND_OF_32:   "ROUND_OF_32",
@@ -135,9 +119,6 @@ const STATUS_MAP: Record<string, string> = {
   PAUSED:    "PAUSED",
   FINISHED:  "FINISHED",
   POSTPONED: "POSTPONED",
-  CANCELLED: "POSTPONED",
-  SUSPENDED: "POSTPONED",
-  AWARDED:   "FINISHED",
 }
 
 export function mapStage(s: string): string {

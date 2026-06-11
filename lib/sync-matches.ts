@@ -10,18 +10,18 @@ import type { Stage } from "@/lib/scoring"
 // Нормализует название команды для сравнения между football-data.org и api-sports.io
 function canonTeam(name: string): string {
   const n = name.trim().toLowerCase()
-  // Korea Republic (FD) ↔ South Korea (AS)
   if (/korea republic|south korea/.test(n)) return "south-korea"
-  // Korea DPR (FD) ↔ North Korea (AS)
   if (/korea\s*dpr|north korea/.test(n)) return "north-korea"
-  // United States (FD) ↔ United States (AS) — на всякий случай
   if (/\busa\b|united states/.test(n)) return "usa"
-  // Côte d'Ivoire (FD) ↔ Ivory Coast (AS)
   if (/ivory coast|c[oô]te d.?ivoire/.test(n)) return "ivory-coast"
-  // DR Congo / Congo DR
   if (/\bdr\s+congo\b|congo\s+dr\b/.test(n)) return "dr-congo"
-  // Trinidad and Tobago
   if (/trinidad/.test(n)) return "trinidad"
+  // sstats: "Czech Republic" ↔ DB: "Czechia"
+  if (/czechia|czech republic/.test(n)) return "czech-republic"
+  // sstats: "Bosnia & Herzegovina" ↔ DB: "Bosnia-Herzegovina"
+  if (/bosnia/.test(n)) return "bosnia-herzegovina"
+  // sstats: "Türkiye" ↔ DB: "Turkey"
+  if (/t[üu]rkiye|turkey/.test(n)) return "turkey"
   return n.replace(/\s+/g, "-")
 }
 

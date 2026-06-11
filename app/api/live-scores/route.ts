@@ -1,47 +1,37 @@
-// app/api/live-scores/route.ts — ESPN API, server-cache 5 мин
+// app/api/live-scores/route.ts — sstats.net API, server-cache 60 сек
 import { NextResponse } from "next/server"
 
-export const revalidate = 300 // 5 минут серверного кеша
+export const revalidate = 60
 
-const ESPN_BASE = "https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world"
+function sstatsStatus(code: number): string {
+  if (code === 8) return "FINISHED"
+  if (code === 5) return "PAUSED"
+  if ([3, 4, 6, 7].includes(code)) return "IN_PLAY"
+  if (code === 9) return "POSTPONED"
+  return "SCHEDULED"
+}
 
 export async function GET() {
-  const today = new Date().toISOString().slice(0, 10).replace(/-/g, "")
-
   try {
-    const res = await fetch(`${ESPN_BASE}/scoreboard?dates=${today}`, {
-      next: { revalidate: 300 },
+    const res = await fetch("https://api.sstats.net/games/list?LeagueId=1&today=true", {
+      next: { revalidate: 60 },
     })
     if (!res.ok) return NextResponse.json({ matches: [] })
 
     const data = await res.json()
-    const matches = (data.events ?? []).flatMap((event: {
-      id: string
-      competitions: [{
-        status: { type: { name: string; state: string } }
-        competitors: Array<{ homeAway: string; score: string }>
-      }]
+    const matches = (data.data ?? []).map((g: {
+      id: number
+      status: number
+      homeResult: number | null
+      awayResult: number | null
+      homeFTResult: number | null
+      awayFTResult: number | null
     }) => {
-      const comp = event.competitions[0]
-      const state = comp.status.type.state
-      const home = comp.competitors.find(c => c.homeAway === "home")
-      const away = comp.competitors.find(c => c.homeAway === "away")
-      if (!home || !away) return []
-
-      const parseScore = (s: string) => { const n = parseInt(s, 10); return isNaN(n) ? null : n }
-
-      const statusName = comp.status.type.name
-      let status = "SCHEDULED"
-      if (["STATUS_FULL_TIME", "STATUS_FINAL", "STATUS_FULL_PEN", "STATUS_FULL_ET"].includes(statusName)) status = "FINISHED"
-      else if (["STATUS_IN_PROGRESS", "STATUS_EXTRA_TIME", "STATUS_PENALTY", "STATUS_FIRST_HALF", "STATUS_SECOND_HALF"].includes(statusName)) status = "IN_PLAY"
-      else if (statusName === "STATUS_HALFTIME") status = "PAUSED"
-
-      return [{
-        externalId: parseInt(event.id, 10),
-        status,
-        homeScore: state !== "pre" ? parseScore(home.score) : null,
-        awayScore: state !== "pre" ? parseScore(away.score) : null,
-      }]
+      const status = sstatsStatus(g.status)
+      const isStarted = status !== "SCHEDULED"
+      const homeScore = isStarted ? (status === "FINISHED" ? g.homeFTResult : g.homeResult) : null
+      const awayScore = isStarted ? (status === "FINISHED" ? g.awayFTResult : g.awayResult) : null
+      return { externalId: g.id, status, homeScore, awayScore }
     })
 
     return NextResponse.json({ matches })
