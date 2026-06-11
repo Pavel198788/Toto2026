@@ -12,10 +12,11 @@ model User {
   name             String
   email            String            @unique
   password         String
-  isAdmin          Boolean           @default(false)
-  predictions      Prediction[]
-  bonusPredictions BonusPrediction[]
-  createdAt        DateTime          @default(now())
+  isAdmin             Boolean           @default(false)
+  bonusUnlockedUntil  DateTime?
+  predictions         Prediction[]
+  bonusPredictions    BonusPrediction[]
+  createdAt           DateTime          @default(now())
 }
 
 model Match {

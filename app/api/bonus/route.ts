@@ -30,7 +30,15 @@ export async function GET() {
     ])
   ).sort()
 
-  const locked = firstMatch ? new Date() >= new Date(firstMatch.kickoff) : false
+  const globallyLocked = firstMatch ? new Date() >= new Date(firstMatch.kickoff) : false
+  const user = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: { bonusUnlockedUntil: true },
+  })
+  const personallyUnlocked = user?.bonusUnlockedUntil
+    ? new Date() < new Date(user.bonusUnlockedUntil)
+    : false
+  const locked = globallyLocked && !personallyUnlocked
 
   return NextResponse.json({ predictions, teams: allTeams, locked, currentUserId: session.user.id })
 }
@@ -42,11 +50,15 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
 
-  const firstMatch = await prisma.match.findFirst({
-    orderBy: { kickoff: "asc" },
-    select: { kickoff: true },
-  })
-  if (firstMatch && new Date() >= new Date(firstMatch.kickoff)) {
+  const [firstMatch, currentUser] = await Promise.all([
+    prisma.match.findFirst({ orderBy: { kickoff: "asc" }, select: { kickoff: true } }),
+    prisma.user.findUnique({ where: { id: session.user.id }, select: { bonusUnlockedUntil: true } }),
+  ])
+  const globallyLocked = firstMatch ? new Date() >= new Date(firstMatch.kickoff) : false
+  const personallyUnlocked = currentUser?.bonusUnlockedUntil
+    ? new Date() < new Date(currentUser.bonusUnlockedUntil)
+    : false
+  if (globallyLocked && !personallyUnlocked) {
     return NextResponse.json({ error: "Приём прогнозов закрыт" }, { status: 403 })
   }
 
