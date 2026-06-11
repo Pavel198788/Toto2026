@@ -6,11 +6,11 @@ interface GridMatch {
   awayTeam: string
   stage: string
   group?: string | null
-  kickoff: Date
   homeScore?: number | null
   awayScore?: number | null
   status: string
   predictionsClosed: boolean
+  submittedUserIds: string[]
   predictions: {
     userId: string
     userName: string
@@ -87,6 +87,7 @@ export function PredictionsGrid({ matches, participants, currentUserId }: Predic
                   const pred = match.predictions.find((p) => p.userId === participant.id)
                   const isOwn = participant.id === currentUserId
                   const showPred = pred && (isOwn || match.predictionsClosed)
+                  const hasSubmitted = !!pred || match.submittedUserIds.includes(participant.id)
 
                   return (
                     <td
@@ -108,8 +109,8 @@ export function PredictionsGrid({ matches, participants, currentUserId }: Predic
                             </div>
                           )}
                         </div>
-                      ) : pred ? (
-                        <span className="text-gray-700">●</span>
+                      ) : hasSubmitted ? (
+                        <span className="text-gray-600 text-[10px]">🔒</span>
                       ) : (
                         <span className="text-gray-800">—</span>
                       )}

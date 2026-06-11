@@ -36,11 +36,14 @@ export default async function GridPage() {
       awayTeam: match.awayTeam,
       stage: match.stage,
       group: match.group,
-      kickoff: match.kickoff,
       homeScore: match.homeScore,
       awayScore: match.awayScore,
       status: match.status,
       predictionsClosed,
+      // когда окно ещё открыто — передаём только ID кто уже поставил (без счётов)
+      submittedUserIds: predictionsClosed
+        ? []
+        : match.predictions.map((p) => p.userId),
       predictions: match.predictions
         .filter((p) => predictionsClosed || p.userId === userId)
         .map((p) => ({
