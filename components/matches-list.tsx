@@ -141,9 +141,10 @@ export function MatchesList({ byDate, userPredictions, isLoggedIn }: MatchesList
                   : null
 
               return (
-                <div
+                <Link
                   key={match.id}
-                  className="py-3 flex items-center gap-3 hover:bg-[#111]/60 -mx-2 px-2 rounded-sm transition-colors"
+                  href={`/matches/${match.id}`}
+                  className="py-3 flex items-center gap-3 hover:bg-[#111]/60 -mx-2 px-2 rounded-sm transition-colors block"
                 >
                   {/* Время + город (mobile) */}
                   <div className="shrink-0 w-12 text-right">
@@ -251,14 +252,16 @@ export function MatchesList({ byDate, userPredictions, isLoggedIn }: MatchesList
 
                     {/* Кнопка прогноза */}
                     {canPredict && isLoggedIn && (
-                      <Link href={`/matches/${match.id}`}>
-                        <button className="bg-[#1a1500] text-yellow-400 font-black tracking-widest px-3 py-1 rounded-sm text-[9px] hover:bg-yellow-400/10 transition-colors whitespace-nowrap">
-                          ПРОГНОЗ →
-                        </button>
-                      </Link>
+                      <span className="bg-[#1a1500] text-yellow-400 font-black tracking-widest px-3 py-1 rounded-sm text-[9px] whitespace-nowrap">
+                        ПРОГНОЗ →
+                      </span>
+                    )}
+                    {/* Стрелка для live/finished матчей */}
+                    {(isLive || isFinished) && (
+                      <span className="text-gray-600 text-xs">›</span>
                     )}
                   </div>
-                </div>
+                </Link>
               )
             })}
           </div>
