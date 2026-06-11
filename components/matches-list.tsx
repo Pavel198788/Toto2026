@@ -144,7 +144,7 @@ export function MatchesList({ byDate, userPredictions, isLoggedIn }: MatchesList
                 <Link
                   key={match.id}
                   href={`/matches/${match.id}`}
-                  className="py-3 flex items-center gap-3 hover:bg-[#111]/60 -mx-2 px-2 rounded-sm transition-colors block"
+                  className="py-3 flex items-center gap-3 hover:bg-[#111]/60 -mx-2 px-2 rounded-sm transition-colors cursor-pointer"
                 >
                   {/* Время + город (mobile) */}
                   <div className="shrink-0 w-12 text-right">
@@ -256,10 +256,8 @@ export function MatchesList({ byDate, userPredictions, isLoggedIn }: MatchesList
                         ПРОГНОЗ →
                       </span>
                     )}
-                    {/* Стрелка для live/finished матчей */}
-                    {(isLive || isFinished) && (
-                      <span className="text-gray-600 text-xs">›</span>
-                    )}
+                    {/* Стрелка — всегда показываем что строка кликабельна */}
+                    <span className="text-gray-600 text-xs shrink-0">›</span>
                   </div>
                 </Link>
               )
