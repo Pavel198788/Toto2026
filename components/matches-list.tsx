@@ -85,7 +85,7 @@ export function MatchesList({ byDate, userPredictions, isLoggedIn }: MatchesList
 
   useEffect(() => {
     fetchLiveScores()
-    const interval = setInterval(fetchLiveScores, 60_000)
+    const interval = setInterval(fetchLiveScores, 300_000) // 5 мин, синхронно с серверным кешем
     return () => clearInterval(interval)
   }, [fetchLiveScores])
 

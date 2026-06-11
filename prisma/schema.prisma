@@ -74,6 +74,7 @@ model PasswordResetToken {
 
 enum Stage {
   GROUP
+  ROUND_OF_32
   R16
   QUARTERFINAL
   SEMIFINAL

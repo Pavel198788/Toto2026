@@ -1,0 +1,2 @@
+-- AddValue
+ALTER TYPE "Stage" ADD VALUE 'ROUND_OF_32';

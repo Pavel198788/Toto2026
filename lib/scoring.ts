@@ -1,4 +1,4 @@
-export type Stage = "GROUP" | "R16" | "QUARTERFINAL" | "SEMIFINAL" | "THIRD_PLACE" | "FINAL"
+export type Stage = "GROUP" | "ROUND_OF_32" | "R16" | "QUARTERFINAL" | "SEMIFINAL" | "THIRD_PLACE" | "FINAL"
 
 export interface ScoringInput {
   stage: Stage
