@@ -18,27 +18,33 @@ export async function GET() {
     },
   })
 
-  const result = matches.map((match) => ({
-    id: match.id,
-    homeTeam: match.homeTeam,
-    awayTeam: match.awayTeam,
-    stage: match.stage,
-    group: match.group,
-    kickoff: match.kickoff,
-    homeScore: match.homeScore,
-    awayScore: match.awayScore,
-    status: match.status,
-    predictions: match.predictions
-      .filter((p) => match.status === "FINISHED" || p.userId === session.user!.id)
-      .map((p) => ({
-        userId: p.userId,
-        userName: p.user.name,
-        homeScore: p.homeScore,
-        awayScore: p.awayScore,
-        winner: p.winner,
-        points: p.points,
-      })),
-  }))
+  const now = new Date()
+  const result = matches.map((match) => {
+    const cutoff = new Date(match.kickoff.getTime() - 3 * 60 * 60 * 1000)
+    const predictionsClosed = now >= cutoff || match.status !== "SCHEDULED"
+    return {
+      id: match.id,
+      homeTeam: match.homeTeam,
+      awayTeam: match.awayTeam,
+      stage: match.stage,
+      group: match.group,
+      kickoff: match.kickoff,
+      homeScore: match.homeScore,
+      awayScore: match.awayScore,
+      status: match.status,
+      predictionsClosed,
+      predictions: match.predictions
+        .filter((p) => predictionsClosed || p.userId === session.user!.id)
+        .map((p) => ({
+          userId: p.userId,
+          userName: p.user.name,
+          homeScore: p.homeScore,
+          awayScore: p.awayScore,
+          winner: p.winner,
+          points: p.points,
+        })),
+    }
+  })
 
   return NextResponse.json(result)
 }

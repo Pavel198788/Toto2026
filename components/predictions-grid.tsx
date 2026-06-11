@@ -10,6 +10,7 @@ interface GridMatch {
   homeScore?: number | null
   awayScore?: number | null
   status: string
+  predictionsClosed: boolean
   predictions: {
     userId: string
     userName: string
@@ -47,11 +48,13 @@ export function PredictionsGrid({ matches, participants, currentUserId }: Predic
                   <div>{match.homeTeam.slice(0, 3).toUpperCase()}</div>
                   <div className="text-gray-600">vs</div>
                   <div>{match.awayTeam.slice(0, 3).toUpperCase()}</div>
-                  {match.status === "FINISHED" && (
+                  {match.status === "FINISHED" ? (
                     <div className="text-yellow-400 font-bold mt-1">
                       {match.homeScore}:{match.awayScore}
                     </div>
-                  )}
+                  ) : match.predictionsClosed ? (
+                    <div className="text-gray-600 mt-1 text-[9px]">🔒</div>
+                  ) : null}
                 </div>
               </th>
             ))}
@@ -83,8 +86,7 @@ export function PredictionsGrid({ matches, participants, currentUserId }: Predic
                 {matches.map((match) => {
                   const pred = match.predictions.find((p) => p.userId === participant.id)
                   const isOwn = participant.id === currentUserId
-                  const isFinished = match.status === "FINISHED"
-                  const showPred = pred && (isOwn || isFinished)
+                  const showPred = pred && (isOwn || match.predictionsClosed)
 
                   return (
                     <td

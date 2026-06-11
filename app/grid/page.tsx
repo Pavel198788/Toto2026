@@ -24,33 +24,39 @@ export default async function GridPage() {
     orderBy: { name: "asc" },
   })
 
-  const gridData = matches.map((match) => ({
-    id: match.id,
-    homeTeam: match.homeTeam,
-    awayTeam: match.awayTeam,
-    stage: match.stage,
-    group: match.group,
-    kickoff: match.kickoff,
-    homeScore: match.homeScore,
-    awayScore: match.awayScore,
-    status: match.status,
-    predictions: match.predictions
-      .filter((p) => match.status === "FINISHED" || p.userId === userId)
-      .map((p) => ({
-        userId: p.userId,
-        userName: p.user.name,
-        homeScore: p.homeScore,
-        awayScore: p.awayScore,
-        winner: p.winner,
-        points: p.points,
-      })),
-  }))
+  const now = new Date()
+  const gridData = matches.map((match) => {
+    const cutoff = new Date(match.kickoff.getTime() - 3 * 60 * 60 * 1000)
+    const predictionsClosed = now >= cutoff || match.status !== "SCHEDULED"
+    return {
+      id: match.id,
+      homeTeam: match.homeTeam,
+      awayTeam: match.awayTeam,
+      stage: match.stage,
+      group: match.group,
+      kickoff: match.kickoff,
+      homeScore: match.homeScore,
+      awayScore: match.awayScore,
+      status: match.status,
+      predictionsClosed,
+      predictions: match.predictions
+        .filter((p) => predictionsClosed || p.userId === userId)
+        .map((p) => ({
+          userId: p.userId,
+          userName: p.user.name,
+          homeScore: p.homeScore,
+          awayScore: p.awayScore,
+          winner: p.winner,
+          points: p.points,
+        })),
+    }
+  })
 
   return (
     <div className="space-y-4">
       <h1 className="text-[10px] font-black text-yellow-400 tracking-widest uppercase">Сетка прогнозов</h1>
       <p className="text-xs text-gray-600">
-        Чужие прогнозы скрыты до окончания матча
+        Чужие прогнозы открываются за 3 часа до старта матча
       </p>
       <div className="bg-[#111] border border-[#1a1500] rounded-sm p-4">
         <PredictionsGrid
