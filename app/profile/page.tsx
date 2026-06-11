@@ -80,6 +80,17 @@ export default async function ProfilePage() {
   const initials = (session.user.name ?? "?").charAt(0).toUpperCase()
   const leaderTotal = rankedUsers[0]?.total ?? 1
 
+  // Crowd П1/X/П2 stats per match
+  const crowdStats = new Map<string, { p1: number; draw: number; p2: number; total: number }>()
+  for (const p of crossPredictions) {
+    const s = crowdStats.get(p.matchId) ?? { p1: 0, draw: 0, p2: 0, total: 0 }
+    if (p.homeScore > p.awayScore) s.p1++
+    else if (p.homeScore === p.awayScore) s.draw++
+    else s.p2++
+    s.total++
+    crowdStats.set(p.matchId, s)
+  }
+
   const homeWins = myPredictions.filter(p => p.homeScore > p.awayScore).length
   const draws = myPredictions.filter(p => p.homeScore === p.awayScore).length
   const awayWins = myPredictions.filter(p => p.homeScore < p.awayScore).length
@@ -459,6 +470,42 @@ export default async function ProfilePage() {
                     </div>
                   )}
                 </div>
+                {isFinished && (() => {
+                  const s = crowdStats.get(pred.matchId)
+                  if (!s || s.total === 0) return null
+                  const rows = [
+                    { key: "p1", label: `П1  ${teamFlag(pred.match.homeTeam)} ${pred.match.homeTeam}`, count: s.p1 },
+                    { key: "x",  label: "Ничья", count: s.draw },
+                    { key: "p2", label: `П2  ${teamFlag(pred.match.awayTeam)} ${pred.match.awayTeam}`, count: s.p2 },
+                  ]
+                  return (
+                    <div className="mt-3 border-t border-[#1a1500] pt-3">
+                      <p className="text-[9px] font-black text-yellow-400 tracking-widest uppercase mb-0.5">
+                        А хули думал, ты один такой?
+                      </p>
+                      <p className="text-xs text-gray-500 mb-3">Что выбрали участники ({s.total})</p>
+                      <div className="space-y-2">
+                        {rows.map(({ key, label, count }) => {
+                          const pct = Math.round(count / s.total * 100)
+                          return (
+                            <div key={key}>
+                              <div className="flex justify-between text-xs mb-1">
+                                <span className="font-bold text-white">{label}</span>
+                                <span className="text-gray-400">{count} · {pct}%</span>
+                              </div>
+                              <div className="bg-gray-800 rounded-full h-1.5">
+                                <div
+                                  className="bg-yellow-500 h-1.5 rounded-full transition-all"
+                                  style={{ width: `${pct}%` }}
+                                />
+                              </div>
+                            </div>
+                          )
+                        })}
+                      </div>
+                    </div>
+                  )
+                })()}
               </div>
             )
           })}
