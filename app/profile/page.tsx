@@ -109,13 +109,6 @@ export default async function ProfilePage() {
 
   const last5 = finished.slice(-5)
 
-  const n = rankedUsers.length
-  const radarRank = n > 1 ? (n - rankInfo.rank) / (n - 1) : 1
-  const radarForm = Math.min(1, last5.reduce((s, p) => s + (p.points ?? 0), 0) / 60)
-  const radarStability = accuracy / 100
-  const radarPrecision = Math.min(1, (exactCount / Math.max(1, finished.length)) * 5)
-  const radarBoldness = uniqueness.pct / 100
-
   return (
     <div className="space-y-6 pb-8">
       {/* 1. ШАПКА */}
@@ -171,36 +164,7 @@ export default async function ProfilePage() {
         </div>
       </div>
 
-      {/* 3. ПРОФИЛЬ ИГРОКА */}
-      <div className="bg-[#111] border border-[#1a1500] rounded-sm p-4">
-        <h2 className="text-[9px] font-bold text-yellow-400 tracking-widest uppercase mb-4">
-          Профиль игрока
-        </h2>
-        <div className="space-y-3">
-          {[
-            { label: "Рейтинг",      value: `#${rankInfo.rank} из ${n}`,                          pct: radarRank * 100 },
-            { label: "Форма",        value: `${last5.reduce((s, p) => s + (p.points ?? 0), 0)} оч.`, pct: radarForm * 100 },
-            { label: "Стабильность", value: `${accuracy}%`,                                        pct: radarStability * 100 },
-            { label: "Точность",     value: `${Math.round(exactCount / Math.max(1, finished.length) * 100)}%`, pct: radarPrecision * 100 },
-            { label: "Смелость",     value: `${uniqueness.pct}%`,                                  pct: radarBoldness * 100 },
-          ].map(({ label, value, pct }) => (
-            <div key={label}>
-              <div className="flex items-center justify-between mb-1">
-                <span className="text-xs text-gray-400">{label}</span>
-                <span className="text-xs font-bold text-yellow-400">{value}</span>
-              </div>
-              <div className="bg-gray-800 rounded-full h-1.5">
-                <div
-                  className="bg-yellow-500 h-1.5 rounded-full transition-all"
-                  style={{ width: `${Math.max(2, Math.round(pct))}%` }}
-                />
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* 4. МИНИ-РЕЙТИНГ */}
+      {/* 3. МИНИ-РЕЙТИНГ */}
       {rankInfo.rank > 0 && (
         <div className="bg-[#111] border border-[#1a1500] rounded-sm p-4">
           <h2 className="text-[9px] font-bold text-yellow-400 tracking-widest uppercase mb-3">
