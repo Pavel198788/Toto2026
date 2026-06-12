@@ -204,7 +204,7 @@ export function calcUniqueness(
   for (const pred of myPredictions) {
     if (!finishedIds.has(pred.matchId)) continue
     const others = othersByMatch.get(pred.matchId) ?? []
-    if (others.length < 2) continue
+    if (others.length < 1) continue
 
     const votes = { H: 0, A: 0, D: 0 }
     for (const o of others) votes[outcomeOf(o.homeScore, o.awayScore)]++
