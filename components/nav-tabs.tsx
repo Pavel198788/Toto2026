@@ -8,8 +8,8 @@ const TABS = [
   { href: "/leaderboard", label: "РЕЙТИНГ" },
   { href: "/analytics", label: "АНАЛИТИКА" },
   { href: "/profile", label: "ПРОФИЛЬ" },
-  { href: "/standings", label: "ГРУППЫ" },
   { href: "/grid", label: "СЕТКА" },
+  { href: "/standings", label: "ГРУППЫ" },
   { href: "/bonus", label: "БОНУС" },
   { href: "/rules", label: "ПРАВИЛА" },
 ]
