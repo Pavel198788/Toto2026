@@ -173,35 +173,33 @@ export default async function ProfilePage() {
       </div>
 
       {/* 3. РАДАР */}
-      {finished.length >= 3 && (
-        <div className="bg-[#111] border border-[#1a1500] rounded-sm p-4">
-          <h2 className="text-[9px] font-bold text-yellow-400 tracking-widest uppercase mb-1">
-            Профиль игрока
-          </h2>
-          <p className="text-xs text-gray-600 mb-3">Пять измерений твоей игры</p>
-          <ProfileRadar values={{
-            rank: radarRank,
-            form: radarForm,
-            stability: radarStability,
-            precision: radarPrecision,
-            boldness: radarBoldness,
-          }} />
-          <div className="grid grid-cols-5 gap-1 mt-2 text-center">
-            {[
-              { label: "Рейтинг", val: Math.round(radarRank * 100) },
-              { label: "Форма",   val: Math.round(radarForm * 100) },
-              { label: "Точность", val: Math.round(radarPrecision * 100) },
-              { label: "Стаб.",   val: Math.round(radarStability * 100) },
-              { label: "Смелость", val: Math.round(radarBoldness * 100) },
-            ].map(({ label, val }) => (
-              <div key={label}>
-                <p className="text-[9px] text-gray-500">{label}</p>
-                <p className="text-xs font-bold text-yellow-400">{val}</p>
-              </div>
-            ))}
-          </div>
+      <div className="bg-[#111] border border-[#1a1500] rounded-sm p-4">
+        <h2 className="text-[9px] font-bold text-yellow-400 tracking-widest uppercase mb-1">
+          Профиль игрока
+        </h2>
+        <p className="text-xs text-gray-600 mb-3">Пять измерений твоей игры</p>
+        <ProfileRadar values={{
+          rank: radarRank,
+          form: radarForm,
+          stability: radarStability,
+          precision: radarPrecision,
+          boldness: radarBoldness,
+        }} />
+        <div className="grid grid-cols-5 gap-1 mt-2 text-center">
+          {[
+            { label: "Рейтинг", val: Math.round(radarRank * 100) },
+            { label: "Форма",   val: Math.round(radarForm * 100) },
+            { label: "Точность", val: Math.round(radarPrecision * 100) },
+            { label: "Стаб.",   val: Math.round(radarStability * 100) },
+            { label: "Смелость", val: Math.round(radarBoldness * 100) },
+          ].map(({ label, val }) => (
+            <div key={label}>
+              <p className="text-[9px] text-gray-500">{label}</p>
+              <p className="text-xs font-bold text-yellow-400">{val}</p>
+            </div>
+          ))}
         </div>
-      )}
+      </div>
 
       {/* 4. МИНИ-РЕЙТИНГ */}
       {rankInfo.rank > 0 && (
