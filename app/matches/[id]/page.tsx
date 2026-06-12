@@ -102,61 +102,55 @@ export default async function MatchPage({ params }: { params: Promise<{ id: stri
         )}
       </div>
 
-      {/* Результат (завершённый матч) */}
+      {/* Результат + события (завершённый матч) */}
       {match.status === "FINISHED" && (
-        <div className="bg-gray-900 border border-gray-800 rounded-lg p-6 text-center">
-          <p className="text-gray-400 text-sm mb-2">Результат</p>
-          <p className="text-4xl font-bold">
-            {match.homeScore}:{match.awayScore}
-          </p>
-          {match.winner && <p className="text-yellow-400 mt-2">Победитель: {match.winner}</p>}
-        </div>
-      )}
-
-      {/* События матча */}
-      {events.length > 0 && (
-        <div className="bg-gray-900 border border-gray-800 rounded-lg p-4">
-          <div className="grid grid-cols-[1fr_auto_1fr] gap-x-2 gap-y-2 items-start">
-            {/* Заголовок */}
-            <p className="text-xs text-gray-400 text-right truncate">{match.homeTeam}</p>
-            <div className="w-px" />
-            <p className="text-xs text-gray-400 truncate">{match.awayTeam}</p>
-
-            {/* События по порядку минут */}
-            {events
-              .slice()
-              .sort((a, b) => a.minute - b.minute || (a.minuteExtra ?? 0) - (b.minuteExtra ?? 0))
-              .map((e, i) => {
-                const minStr = e.minuteExtra ? `${e.minute}+${e.minuteExtra}'` : `${e.minute}'`
-                const icon = EVENT_ICON[e.type]
-                const isOwn = e.type === "own_goal"
-                const isMissed = e.type === "penalty_missed"
-                const textColor = e.type === "red_card"
-                  ? "text-red-500"
-                  : isMissed
-                  ? "text-gray-500"
-                  : "text-white"
-                return e.team === "home" ? (
-                  <div key={i} className="contents">
-                    <div className="flex items-center justify-end gap-1 text-right">
-                      <div className={`text-sm font-medium ${textColor}`}>{e.player}{isOwn ? " (аг)" : ""}</div>
-                      <div className="text-gray-400 text-xs shrink-0">{minStr} {icon}</div>
-                    </div>
-                    <div className="border-l border-gray-700 self-stretch mx-auto w-px" />
-                    <div />
-                  </div>
-                ) : (
-                  <div key={i} className="contents">
-                    <div />
-                    <div className="border-l border-gray-700 self-stretch mx-auto w-px" />
-                    <div className="flex items-center gap-1">
-                      <div className="text-gray-400 text-xs shrink-0">{icon} {minStr}</div>
-                      <div className={`text-sm font-medium ${textColor}`}>{e.player}{isOwn ? " (аг)" : ""}</div>
-                    </div>
-                  </div>
-                )
-              })}
+        <div className="bg-gray-900 border border-gray-800 rounded-lg p-6">
+          <div className="text-center mb-4">
+            <p className="text-gray-400 text-sm mb-2">Результат</p>
+            <p className="text-4xl font-bold">{match.homeScore}:{match.awayScore}</p>
+            {match.winner && <p className="text-yellow-400 mt-2">Победитель: {match.winner}</p>}
           </div>
+
+          {events.length > 0 && (
+            <>
+              <div className="border-t border-gray-800 mb-3" />
+              <div className="grid grid-cols-[1fr_auto_1fr] gap-x-2 gap-y-2 items-start">
+                {events
+                  .slice()
+                  .sort((a, b) => a.minute - b.minute || (a.minuteExtra ?? 0) - (b.minuteExtra ?? 0))
+                  .map((e, i) => {
+                    const minStr = e.minuteExtra ? `${e.minute}+${e.minuteExtra}'` : `${e.minute}'`
+                    const icon = EVENT_ICON[e.type]
+                    const isOwn = e.type === "own_goal"
+                    const isMissed = e.type === "penalty_missed"
+                    const textColor = e.type === "red_card"
+                      ? "text-red-500"
+                      : isMissed
+                      ? "text-gray-500"
+                      : "text-white"
+                    return e.team === "home" ? (
+                      <div key={i} className="contents">
+                        <div className="flex items-center justify-end gap-1 text-right">
+                          <span className={`text-sm font-medium ${textColor}`}>{e.player}{isOwn ? " (аг)" : ""}</span>
+                          <span className="text-gray-400 text-xs shrink-0">{minStr} {icon}</span>
+                        </div>
+                        <div className="border-l border-gray-700 self-stretch mx-auto w-px" />
+                        <div />
+                      </div>
+                    ) : (
+                      <div key={i} className="contents">
+                        <div />
+                        <div className="border-l border-gray-700 self-stretch mx-auto w-px" />
+                        <div className="flex items-center gap-1">
+                          <span className="text-gray-400 text-xs shrink-0">{icon} {minStr}</span>
+                          <span className={`text-sm font-medium ${textColor}`}>{e.player}{isOwn ? " (аг)" : ""}</span>
+                        </div>
+                      </div>
+                    )
+                  })}
+              </div>
+            </>
+          )}
         </div>
       )}
 
