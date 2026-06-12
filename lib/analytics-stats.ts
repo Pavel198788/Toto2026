@@ -392,6 +392,8 @@ export function calcTwins(
 
 // ── Секция: снайпер ───────────────────────────────────────────────────────
 
+// ── Секция: снайпер ───────────────────────────────────────────────────────
+
 export type SniperEntry = {
   userId: string
   name: string
@@ -435,5 +437,51 @@ export function calcSniper(
     .sort((a, b) => b.exactCount - a.exactCount || b.pct - a.pct)
 
   const maxCount = entries[0]?.exactCount ?? 0
+  return entries.map(e => ({ ...e, maxCount }))
+}
+
+// ── Секция: бомбардир ─────────────────────────────────────────────────────
+
+export type BombarderEntry = {
+  userId: string
+  name: string
+  guessedCount: number
+  totalFinished: number
+  pct: number
+  maxCount: number
+}
+
+export function calcBombardier(
+  predictions: PredRow[],
+  users: UserRow[]
+): BombarderEntry[] {
+  const guessedByUser = new Map<string, number>()
+  const totalByUser = new Map<string, number>()
+
+  for (const p of predictions) {
+    if (p.points === null) continue
+    totalByUser.set(p.userId, (totalByUser.get(p.userId) ?? 0) + 1)
+    if ((p.points) > 0) {
+      guessedByUser.set(p.userId, (guessedByUser.get(p.userId) ?? 0) + 1)
+    }
+  }
+
+  const entries = users
+    .map(u => {
+      const guessedCount = guessedByUser.get(u.id) ?? 0
+      const totalFinished = totalByUser.get(u.id) ?? 0
+      return {
+        userId: u.id,
+        name: u.name ?? "?",
+        guessedCount,
+        totalFinished,
+        pct: totalFinished > 0 ? Math.round(guessedCount / totalFinished * 100) : 0,
+        maxCount: 0,
+      }
+    })
+    .filter(e => e.guessedCount > 0)
+    .sort((a, b) => b.guessedCount - a.guessedCount || b.pct - a.pct)
+
+  const maxCount = entries[0]?.guessedCount ?? 0
   return entries.map(e => ({ ...e, maxCount }))
 }
