@@ -7,6 +7,7 @@ import {
   calcTwin, calcComparison, calcUniqueness, type RankedUser,
 } from "@/lib/profile-stats"
 import { teamFlag } from "@/lib/flags"
+import { ProfileRadar } from "@/components/profile-radar"
 
 const EXACT_POINTS = new Set([12, 25, 35])
 
@@ -109,6 +110,13 @@ export default async function ProfilePage() {
 
   const last5 = finished.slice(-5)
 
+  const n = rankedUsers.length
+  const radarRank = n > 1 ? (n - rankInfo.rank) / (n - 1) : 1
+  const radarForm = Math.min(1, last5.reduce((s, p) => s + (p.points ?? 0), 0) / 60)
+  const radarStability = accuracy / 100
+  const radarPrecision = Math.min(1, (exactCount / Math.max(1, finished.length)) * 5)
+  const radarBoldness = uniqueness.pct / 100
+
   return (
     <div className="space-y-6 pb-8">
       {/* 1. ШАПКА */}
@@ -164,7 +172,38 @@ export default async function ProfilePage() {
         </div>
       </div>
 
-      {/* 3. МИНИ-РЕЙТИНГ */}
+      {/* 3. РАДАР */}
+      {finished.length >= 3 && (
+        <div className="bg-[#111] border border-[#1a1500] rounded-sm p-4">
+          <h2 className="text-[9px] font-bold text-yellow-400 tracking-widest uppercase mb-1">
+            Профиль игрока
+          </h2>
+          <p className="text-xs text-gray-600 mb-3">Пять измерений твоей игры</p>
+          <ProfileRadar values={{
+            rank: radarRank,
+            form: radarForm,
+            stability: radarStability,
+            precision: radarPrecision,
+            boldness: radarBoldness,
+          }} />
+          <div className="grid grid-cols-5 gap-1 mt-2 text-center">
+            {[
+              { label: "Рейтинг", val: Math.round(radarRank * 100) },
+              { label: "Форма",   val: Math.round(radarForm * 100) },
+              { label: "Точность", val: Math.round(radarPrecision * 100) },
+              { label: "Стаб.",   val: Math.round(radarStability * 100) },
+              { label: "Смелость", val: Math.round(radarBoldness * 100) },
+            ].map(({ label, val }) => (
+              <div key={label}>
+                <p className="text-[9px] text-gray-500">{label}</p>
+                <p className="text-xs font-bold text-yellow-400">{val}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* 4. МИНИ-РЕЙТИНГ */}
       {rankInfo.rank > 0 && (
         <div className="bg-[#111] border border-[#1a1500] rounded-sm p-4">
           <h2 className="text-[9px] font-bold text-yellow-400 tracking-widest uppercase mb-3">
