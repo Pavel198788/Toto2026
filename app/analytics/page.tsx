@@ -195,7 +195,7 @@ export default async function AnalyticsPage() {
                 <div className="bg-gray-800 rounded-full h-1.5">
                   <div
                     className="bg-yellow-500 h-1.5 rounded-full"
-                    style={{ width: `${entry.maxCount > 0 ? Math.round(entry.exactCount / entry.maxCount * 100) : 0}%` }}
+                    style={{ width: `${entry.pct}%` }}
                   />
                 </div>
               </div>
@@ -230,7 +230,7 @@ export default async function AnalyticsPage() {
                 <div className="bg-gray-800 rounded-full h-1.5">
                   <div
                     className="bg-yellow-500 h-1.5 rounded-full"
-                    style={{ width: `${entry.maxCount > 0 ? Math.round(entry.guessedCount / entry.maxCount * 100) : 0}%` }}
+                    style={{ width: `${entry.pct}%` }}
                   />
                 </div>
               </div>
@@ -300,7 +300,7 @@ export default async function AnalyticsPage() {
                 <div className="bg-gray-800 rounded-full h-1.5">
                   <div
                     className="bg-yellow-500 h-1.5 rounded-full"
-                    style={{ width: `${entry.maxWins > 0 ? Math.round((entry.wins / entry.maxWins) * 100) : 0}%` }}
+                    style={{ width: `${entry.pct}%` }}
                   />
                 </div>
               </div>
