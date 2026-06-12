@@ -52,6 +52,19 @@ export default async function MatchPage({ params }: { params: Promise<{ id: stri
       })
     : null
 
+  const nextMatch = session?.user?.id
+    ? await prisma.match.findFirst({
+        where: {
+          id: { not: match.id },
+          status: "SCHEDULED",
+          kickoff: { gt: new Date(Date.now() + 3 * 60 * 60 * 1000) },
+          NOT: { predictions: { some: { userId: session.user.id } } },
+        },
+        orderBy: { kickoff: "asc" },
+        select: { id: true },
+      })
+    : null
+
   // Crowd stats — показываем только когда окно прогнозов закрыто (<=3ч до матча)
   const predictionsClosed = new Date() >= cutoff || match.status !== "SCHEDULED"
   const crowdPreds = predictionsClosed
@@ -179,6 +192,7 @@ export default async function MatchPage({ params }: { params: Promise<{ id: stri
               homeTeam={match.homeTeam}
               awayTeam={match.awayTeam}
               isPlayoff={PLAYOFF_STAGES.has(match.stage)}
+              nextMatchId={nextMatch?.id ?? null}
             />
           </>
         ) : (

@@ -19,9 +19,10 @@ interface PredictionFormProps {
   homeTeam: string
   awayTeam: string
   isPlayoff: boolean
+  nextMatchId?: string | null
 }
 
-export function PredictionForm({ matchId, homeTeam, awayTeam, isPlayoff }: PredictionFormProps) {
+export function PredictionForm({ matchId, homeTeam, awayTeam, isPlayoff, nextMatchId }: PredictionFormProps) {
   const router = useRouter()
   const [homeScore, setHomeScore] = useState("")
   const [awayScore, setAwayScore] = useState("")
@@ -66,7 +67,11 @@ export function PredictionForm({ matchId, homeTeam, awayTeam, isPlayoff }: Predi
 
     if (res.ok) {
       setShowConfirm(false)
-      router.refresh()
+      if (nextMatchId) {
+        router.push(`/matches/${nextMatchId}`)
+      } else {
+        router.refresh()
+      }
     } else {
       const data = await res.json()
       setError(data.error ?? "Ошибка при сохранении")
