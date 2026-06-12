@@ -108,11 +108,11 @@ export function MatchesList({ byDate, userPredictions, isLoggedIn }: MatchesList
               const isLive = effectiveStatus === "IN_PLAY" || effectiveStatus === "PAUSED"
 
               const kickoff = new Date(match.kickoff)
-              const timeStr = kickoff.toLocaleTimeString("ru-RU", {
-                hour: "2-digit",
-                minute: "2-digit",
-                timeZone: "Europe/Moscow",
-              })
+              const mskDate = new Date(kickoff.getTime() + 3 * 60 * 60 * 1000)
+              const timeStr =
+                mskDate.getUTCHours().toString().padStart(2, "0") +
+                ":" +
+                mskDate.getUTCMinutes().toString().padStart(2, "0")
 
               const groupLetter = match.group?.replace(/^GROUP_/, "") ?? ""
               const stageLabel =

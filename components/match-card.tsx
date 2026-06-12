@@ -48,8 +48,8 @@ export function MatchCard({ match, hasPrediction, prediction }: MatchCardProps) 
         </span>
         <div className="text-right">
           <div className="text-[10px] text-gray-600">
-            {kickoff.toLocaleDateString("ru-RU", { day: "numeric", month: "short" })}{" "}
-            {kickoff.toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" })}
+            {kickoff.toLocaleDateString("ru-RU", { day: "numeric", month: "short", timeZone: "Europe/Moscow" })}{" "}
+            {kickoff.toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit", timeZone: "Europe/Moscow" })}
           </div>
           {(match.city || match.country) && (
             <div className="text-[9px] text-gray-500 mt-0.5">
