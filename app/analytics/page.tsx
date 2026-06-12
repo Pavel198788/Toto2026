@@ -239,7 +239,7 @@ export default async function AnalyticsPage() {
       {topContrarians.length >= 1 && (
         <div className="bg-[#111] border border-[#1a1500] rounded-sm p-4">
           <h2 className="text-[9px] font-bold text-yellow-400 tracking-widest uppercase mb-1">
-            Самый смелый 🎯
+            Самый смелый 🦾
           </h2>
           <p className="text-xs text-gray-600 mb-4">Ставил против большинства — и угадал</p>
           <div className="space-y-4">
