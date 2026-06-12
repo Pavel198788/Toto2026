@@ -96,10 +96,6 @@ export default async function ProfilePage() {
   const draws = myPredictions.filter(p => p.homeScore === p.awayScore).length
   const awayWins = myPredictions.filter(p => p.homeScore < p.awayScore).length
 
-  const bestPred = finished.length > 0
-    ? finished.reduce((best, p) => ((p.points ?? 0) > (best.points ?? 0) ? p : best), finished[0])
-    : null
-
   const avgPredGoals = myPredictions.length > 0
     ? (myPredictions.reduce((s, p) => s + p.homeScore + p.awayScore, 0) / myPredictions.length).toFixed(1)
     : null
@@ -329,23 +325,6 @@ export default async function ProfilePage() {
                     </div>
                   </div>
                 ))}
-              </div>
-            </div>
-          )}
-
-          {/* 5е. Лучший матч */}
-          {bestPred && (bestPred.points ?? 0) > 0 && (
-            <div className="bg-[#111] border border-[#1a1500] rounded-sm p-4">
-              <p className="text-xs text-gray-400 mb-3">ЛУЧШИЙ МАТЧ</p>
-              <p className="text-xs text-gray-300 leading-tight mb-2">
-                {teamFlag(bestPred.match.homeTeam)} {bestPred.match.homeTeam}<br />
-                — {teamFlag(bestPred.match.awayTeam)} {bestPred.match.awayTeam}
-              </p>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-400">
-                  {bestPred.homeScore}:{bestPred.awayScore}
-                </span>
-                <span className="text-xl font-bold text-green-400">+{bestPred.points}</span>
               </div>
             </div>
           )}
