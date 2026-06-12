@@ -6,8 +6,8 @@ import {
   calcHotHand,
   calcContrarians,
   calcMatchesOfTour,
+  calcTwins,
 } from "@/lib/analytics-stats"
-import { AnalyticsHeatmap } from "@/components/analytics-heatmap"
 
 const AVATAR_COLORS = [
   "bg-yellow-600", "bg-green-700", "bg-blue-700", "bg-orange-700",
@@ -55,9 +55,11 @@ export default async function AnalyticsPage() {
   const hotHand = calcHotHand(matches, predictions, users)
   const contrarians = calcContrarians(matches, predictions, users)
   const matchesOfTour = calcMatchesOfTour(matches, predictions, users)
+  const twins = calcTwins(predictions, users)
 
   const topHot = hotHand.filter(e => e.streak > 0).slice(0, 5)
   const topContrarians = contrarians.filter(e => e.wins > 0).slice(0, 5)
+  const topTwins = twins.slice(0, 8)
 
   return (
     <div className="space-y-6 pb-8">
@@ -115,15 +117,52 @@ export default async function AnalyticsPage() {
         </div>
       </div>
 
-      {/* СЕКЦИЯ 2: ТЕПЛОВАЯ КАРТА */}
+      {/* СЕКЦИЯ 2: БЛИЗНЕЦЫ */}
       <div className="bg-[#111] border border-[#1a1500] rounded-sm p-4">
-        <h2 className="text-[9px] font-bold text-yellow-400 tracking-widest uppercase mb-4">
-          Матч за матчем
+        <h2 className="text-[9px] font-bold text-yellow-400 tracking-widest uppercase mb-1">
+          Близнецы 👯
         </h2>
-        <AnalyticsHeatmap
-          series={cumulative}
-          matchCount={matches.length}
-        />
+        <p className="text-xs text-gray-600 mb-4">Кто думает одинаково — совпадение прогнозов</p>
+        {topTwins.length === 0 ? (
+          <p className="text-sm text-gray-500 text-center py-4">Пока недостаточно данных</p>
+        ) : (
+          <div className="space-y-3">
+            {topTwins.map((pair, idx) => {
+              const label =
+                pair.pct >= 80 ? "👯 Близнецы" :
+                pair.pct >= 65 ? "🤝 Похожи" :
+                "🎲 Разные"
+              return (
+                <div key={`${pair.userId1}-${pair.userId2}`}>
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-sm font-semibold text-gray-200">
+                      {pair.name1.split(" ")[0]}
+                      <span className="text-gray-600 mx-1.5">↔</span>
+                      {pair.name2.split(" ")[0]}
+                    </span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] text-gray-500">{pair.sameCount} из {pair.commonMatches}</span>
+                      <span className="text-[10px] font-black text-yellow-400">{label}</span>
+                    </div>
+                  </div>
+                  <div className="bg-gray-800 rounded-full h-1.5">
+                    <div
+                      className="h-1.5 rounded-full"
+                      style={{
+                        width: `${pair.pct}%`,
+                        background: pair.pct >= 80
+                          ? "linear-gradient(to right, #facc15, #fde68a)"
+                          : pair.pct >= 65
+                          ? "linear-gradient(to right, #92400e, #d97706)"
+                          : "#374151",
+                      }}
+                    />
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        )}
       </div>
 
       {/* СЕКЦИЯ 3: ГОРЯЧАЯ РУКА */}

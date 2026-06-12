@@ -331,3 +331,61 @@ export function calcMatchesOfTour(
 
   return result.sort((a, b) => a.tour.localeCompare(b.tour))
 }
+
+// ── Секция: близнецы ──────────────────────────────────────────────────────
+
+export type TwinPair = {
+  userId1: string
+  name1: string
+  userId2: string
+  name2: string
+  commonMatches: number
+  sameCount: number
+  pct: number
+}
+
+function predOutcome(h: number, a: number): "P1" | "X" | "P2" {
+  return h > a ? "P1" : h < a ? "P2" : "X"
+}
+
+export function calcTwins(
+  predictions: PredRow[],
+  users: UserRow[],
+  minMatches = 3
+): TwinPair[] {
+  const predMap = new Map<string, Map<string, "P1" | "X" | "P2">>()
+  for (const p of predictions) {
+    if (!predMap.has(p.matchId)) predMap.set(p.matchId, new Map())
+    predMap.get(p.matchId)!.set(p.userId, predOutcome(p.homeScore, p.awayScore))
+  }
+
+  const pairs: TwinPair[] = []
+  for (let i = 0; i < users.length; i++) {
+    for (let j = i + 1; j < users.length; j++) {
+      const u1 = users[i]
+      const u2 = users[j]
+      let common = 0
+      let same = 0
+      for (const byUser of predMap.values()) {
+        const o1 = byUser.get(u1.id)
+        const o2 = byUser.get(u2.id)
+        if (o1 !== undefined && o2 !== undefined) {
+          common++
+          if (o1 === o2) same++
+        }
+      }
+      if (common < minMatches) continue
+      pairs.push({
+        userId1: u1.id,
+        name1: u1.name ?? "?",
+        userId2: u2.id,
+        name2: u2.name ?? "?",
+        commonMatches: common,
+        sameCount: same,
+        pct: Math.round((same / common) * 100),
+      })
+    }
+  }
+
+  return pairs.sort((a, b) => b.pct - a.pct || b.commonMatches - a.commonMatches)
+}
