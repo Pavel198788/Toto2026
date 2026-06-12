@@ -208,10 +208,8 @@ export function calcUniqueness(
 
     const votes = { H: 0, A: 0, D: 0 }
     for (const o of others) votes[outcomeOf(o.homeScore, o.awayScore)]++
-    const [topOutcome, topCount] = (Object.entries(votes) as [string, number][])
+    const [topOutcome] = (Object.entries(votes) as [string, number][])
       .sort((a, b) => b[1] - a[1])[0]
-
-    if (topCount / others.length <= 0.5) continue // no clear majority
 
     total++
     const myOutcome = outcomeOf(pred.homeScore, pred.awayScore)
