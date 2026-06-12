@@ -7,7 +7,6 @@ import {
   calcTwin, calcComparison, calcUniqueness, type RankedUser,
 } from "@/lib/profile-stats"
 import { teamFlag } from "@/lib/flags"
-import { ProfileRadar } from "@/components/profile-radar"
 
 const EXACT_POINTS = new Set([12, 25, 35])
 
@@ -172,30 +171,30 @@ export default async function ProfilePage() {
         </div>
       </div>
 
-      {/* 3. РАДАР */}
+      {/* 3. ПРОФИЛЬ ИГРОКА */}
       <div className="bg-[#111] border border-[#1a1500] rounded-sm p-4">
-        <h2 className="text-[9px] font-bold text-yellow-400 tracking-widest uppercase mb-1">
+        <h2 className="text-[9px] font-bold text-yellow-400 tracking-widest uppercase mb-4">
           Профиль игрока
         </h2>
-        <p className="text-xs text-gray-600 mb-3">Пять измерений твоей игры</p>
-        <ProfileRadar values={{
-          rank: radarRank,
-          form: radarForm,
-          stability: radarStability,
-          precision: radarPrecision,
-          boldness: radarBoldness,
-        }} />
-        <div className="grid grid-cols-5 gap-1 mt-2 text-center">
+        <div className="space-y-3">
           {[
-            { label: "Рейтинг", val: Math.round(radarRank * 100) },
-            { label: "Форма",   val: Math.round(radarForm * 100) },
-            { label: "Точность", val: Math.round(radarPrecision * 100) },
-            { label: "Стаб.",   val: Math.round(radarStability * 100) },
-            { label: "Смелость", val: Math.round(radarBoldness * 100) },
-          ].map(({ label, val }) => (
+            { label: "Рейтинг",      value: `#${rankInfo.rank} из ${n}`,                          pct: radarRank * 100 },
+            { label: "Форма",        value: `${last5.reduce((s, p) => s + (p.points ?? 0), 0)} оч.`, pct: radarForm * 100 },
+            { label: "Стабильность", value: `${accuracy}%`,                                        pct: radarStability * 100 },
+            { label: "Точность",     value: `${Math.round(exactCount / Math.max(1, finished.length) * 100)}%`, pct: radarPrecision * 100 },
+            { label: "Смелость",     value: `${uniqueness.pct}%`,                                  pct: radarBoldness * 100 },
+          ].map(({ label, value, pct }) => (
             <div key={label}>
-              <p className="text-[9px] text-gray-500">{label}</p>
-              <p className="text-xs font-bold text-yellow-400">{val}</p>
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-xs text-gray-400">{label}</span>
+                <span className="text-xs font-bold text-yellow-400">{value}</span>
+              </div>
+              <div className="bg-gray-800 rounded-full h-1.5">
+                <div
+                  className="bg-yellow-500 h-1.5 rounded-full transition-all"
+                  style={{ width: `${Math.max(2, Math.round(pct))}%` }}
+                />
+              </div>
             </div>
           ))}
         </div>
