@@ -3,6 +3,7 @@ import { Inter } from "next/font/google"
 import "./globals.css"
 import { Navbar } from "@/components/navbar"
 import { Providers } from "@/components/providers"
+import { LiveRefresh } from "@/components/live-refresh"
 
 const inter = Inter({ subsets: ["latin", "cyrillic"] })
 
@@ -21,6 +22,7 @@ export default function RootLayout({
       <body className={`${inter.className} bg-[#0a0a0a] text-gray-100 min-h-screen overflow-x-hidden`}>
         <Providers>
           <Navbar />
+          <LiveRefresh />
           <main className="container mx-auto px-4 py-8 max-w-7xl">{children}</main>
         </Providers>
       </body>
