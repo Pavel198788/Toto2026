@@ -130,7 +130,7 @@ export function calcComparison(
   allPredictions: CrossPrediction[],
   matches: Array<{ id: string; homeTeam: string; awayTeam: string; status: string }>
 ): ComparisonStats {
-  const EXACT = new Set([11, 22, 32])
+  const EXACT = new Set([12, 25, 35])
   const matchMap = new Map(matches.map(m => [m.id, m]))
   const finishedIds = new Set(matches.filter(m => m.status === "FINISHED").map(m => m.id))
 
@@ -161,8 +161,9 @@ export function calcComparison(
       }
     }
 
-    if (pts === 0 && others.some(o => (o.points ?? 0) > 0)) {
-      missedByOthersGot++
+    if (pts === 0 && others.length > 0) {
+      const othersCorrect = others.filter(o => (o.points ?? 0) > 0).length
+      if (othersCorrect / others.length >= 0.6) missedByOthersGot++
     }
   }
 

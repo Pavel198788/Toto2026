@@ -268,7 +268,7 @@ export default async function ProfilePage() {
                   <span className="font-bold text-green-400">{comparison.uniquelyCorrect}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-400 text-xs">Все угадали, кроме тебя</span>
+                  <span className="text-gray-400 text-xs">Большинство угадали, ты нет</span>
                   <span className="font-bold text-red-400">{comparison.missedByOthersGot}</span>
                 </div>
                 {comparison.rarestMatch && (
