@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation"
 const TABS = [
   { href: "/matches", label: "МАТЧИ" },
   { href: "/leaderboard", label: "РЕЙТИНГ" },
+  { href: "/analytics", label: "АНАЛИТИКА" },
   { href: "/profile", label: "ПРОФИЛЬ" },
   { href: "/standings", label: "ГРУППЫ" },
   { href: "/grid", label: "СЕТКА" },
