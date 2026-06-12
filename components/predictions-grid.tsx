@@ -1,11 +1,15 @@
 "use client"
 
+import { useEffect } from "react"
+import { useRouter } from "next/navigation"
+
 interface GridMatch {
   id: string
   homeTeam: string
   awayTeam: string
   stage: string
   group?: string | null
+  kickoff: string
   homeScore?: number | null
   awayScore?: number | null
   status: string
@@ -28,6 +32,22 @@ interface PredictionsGridProps {
 }
 
 export function PredictionsGrid({ matches, participants, currentUserId }: PredictionsGridProps) {
+  const router = useRouter()
+
+  useEffect(() => {
+    const now = Date.now()
+    const cutoffs = matches
+      .filter((m) => !m.predictionsClosed)
+      .map((m) => new Date(m.kickoff).getTime() - 3 * 60 * 60 * 1000)
+
+    if (cutoffs.length === 0) return
+
+    const next = Math.min(...cutoffs)
+    const delay = Math.max(next - now, 5_000) // минимум 5с чтобы не зациклиться
+    const id = setTimeout(() => router.refresh(), delay)
+    return () => clearTimeout(id)
+  }, [matches, router])
+
   return (
     <div className="overflow-x-auto">
       <table className="text-xs border-collapse">

@@ -36,6 +36,7 @@ export default async function GridPage() {
       awayTeam: match.awayTeam,
       stage: match.stage,
       group: match.group,
+      kickoff: match.kickoff.toISOString(),
       homeScore: match.homeScore,
       awayScore: match.awayScore,
       status: match.status,
