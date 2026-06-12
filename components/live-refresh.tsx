@@ -41,7 +41,7 @@ export function LiveRefresh() {
       }
     }
 
-    // Первый тик через 60 секунд, затем каждые 60 секунд
+    tick()
     timerRef.current = setInterval(tick, 60_000)
     return () => {
       active = false
