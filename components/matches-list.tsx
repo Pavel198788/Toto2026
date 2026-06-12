@@ -1,6 +1,3 @@
-"use client"
-
-import { useState, useEffect, useCallback } from "react"
 import { teamFlag } from "@/lib/flags"
 
 export interface SerializedMatch {
@@ -30,13 +27,6 @@ export interface DateGroup {
   matches: SerializedMatch[]
 }
 
-interface LiveMatch {
-  externalId: number
-  status: string
-  homeScore: number | null
-  awayScore: number | null
-}
-
 interface MatchesListProps {
   byDate: DateGroup[]
   userPredictions: Record<string, SerializedPrediction>
@@ -52,41 +42,12 @@ const STAGE_LABELS: Record<string, string> = {
   FINAL: "Финал",
 }
 
-// football-data.org status → our MatchStatus
-function normalizeStatus(apiStatus: string): string {
-  if (apiStatus === "IN_PLAY") return "IN_PLAY"
-  if (apiStatus === "PAUSED") return "PAUSED"
-  if (apiStatus === "FINISHED") return "FINISHED"
-  return apiStatus
-}
-
 function outcome(h: number, a: number) {
   return h > a ? "H" : h < a ? "A" : "D"
 }
 
 export function MatchesList({ byDate, userPredictions, isLoggedIn }: MatchesListProps) {
-  const [liveScores, setLiveScores] = useState<Record<number, LiveMatch>>({})
-
-  const fetchLiveScores = useCallback(async () => {
-    try {
-      const res = await fetch("/api/live-scores")
-      if (!res.ok) return
-      const data = await res.json()
-      const map: Record<number, LiveMatch> = {}
-      for (const m of (data.matches ?? []) as LiveMatch[]) {
-        map[m.externalId] = m
-      }
-      setLiveScores(map)
-    } catch {
-      // игнорируем ошибки сети
-    }
-  }, [])
-
-  useEffect(() => {
-    fetchLiveScores()
-    const interval = setInterval(fetchLiveScores, 300_000) // 5 мин, синхронно с серверным кешем
-    return () => clearInterval(interval)
-  }, [fetchLiveScores])
+  const now = Date.now()
 
   return (
     <>
@@ -98,14 +59,8 @@ export function MatchesList({ byDate, userPredictions, isLoggedIn }: MatchesList
 
           <div className="divide-y divide-gray-800/60">
             {dayMatches.map((match) => {
-              const live = liveScores[match.externalId]
-
-              const effectiveStatus = live ? normalizeStatus(live.status) : match.status
-              const effectiveHomeScore = live?.homeScore ?? match.homeScore
-              const effectiveAwayScore = live?.awayScore ?? match.awayScore
-
-              const isFinished = effectiveStatus === "FINISHED"
-              const isLive = effectiveStatus === "IN_PLAY" || effectiveStatus === "PAUSED"
+              const isFinished = match.status === "FINISHED"
+              const isLive = match.status === "IN_PLAY" || match.status === "PAUSED"
 
               const kickoff = new Date(match.kickoff)
               const mskDate = new Date(kickoff.getTime() + 3 * 60 * 60 * 1000)
@@ -120,21 +75,21 @@ export function MatchesList({ byDate, userPredictions, isLoggedIn }: MatchesList
                   ? `Группа ${groupLetter}`
                   : STAGE_LABELS[match.stage] ?? match.stage
 
-              const cutoff = new Date(kickoff.getTime() - 3 * 60 * 60 * 1000)
+              const cutoffMs = kickoff.getTime() - 3 * 60 * 60 * 1000
               const canPredict =
                 match.status === "SCHEDULED" &&
                 !(match.id in userPredictions) &&
-                new Date() < cutoff &&
+                now < cutoffMs &&
                 !isLive &&
                 !isFinished
 
               const pred = userPredictions[match.id]
 
               const predIcon =
-                isFinished && pred && effectiveHomeScore != null && effectiveAwayScore != null
-                  ? effectiveHomeScore === pred.homeScore && effectiveAwayScore === pred.awayScore
+                isFinished && pred && match.homeScore != null && match.awayScore != null
+                  ? match.homeScore === pred.homeScore && match.awayScore === pred.awayScore
                     ? "🎯"
-                    : outcome(effectiveHomeScore, effectiveAwayScore) === outcome(pred.homeScore, pred.awayScore)
+                    : outcome(match.homeScore, match.awayScore) === outcome(pred.homeScore, pred.awayScore)
                     ? "🔥"
                     : "💩"
                   : null
@@ -144,7 +99,6 @@ export function MatchesList({ byDate, userPredictions, isLoggedIn }: MatchesList
                   key={match.id}
                   href={`/matches/${match.id}`}
                   className="py-3 flex items-center gap-3 hover:bg-[#111]/60 -mx-2 px-2 rounded-sm transition-colors cursor-pointer"
-                  style={{ display: "flex" }}
                 >
                   {/* Время + город (mobile) */}
                   <div className="shrink-0 w-12 text-right">
@@ -183,10 +137,10 @@ export function MatchesList({ byDate, userPredictions, isLoggedIn }: MatchesList
                               isLive ? "text-green-400" : "text-white"
                             }`}
                           >
-                            {effectiveHomeScore ?? 0}:{effectiveAwayScore ?? 0}
+                            {match.homeScore ?? 0}:{match.awayScore ?? 0}
                           </span>
                           {isLive && (
-                            <span className="block text-[8px] text-green-400 animate-pulse tracking-widest font-bold mt-0.5">
+                            <span className="block text-[8px] text-green-400 tracking-widest font-bold mt-0.5">
                               LIVE
                             </span>
                           )}
@@ -204,7 +158,6 @@ export function MatchesList({ byDate, userPredictions, isLoggedIn }: MatchesList
 
                   {/* Прогноз / действие */}
                   <div className="shrink-0 flex items-center gap-2 ml-auto">
-                    {/* Завершённый матч: эмодзи + счёт + очки */}
                     {isFinished && pred && (
                       <span
                         className={`text-lg font-black flex items-center gap-1 ${
@@ -227,7 +180,6 @@ export function MatchesList({ byDate, userPredictions, isLoggedIn }: MatchesList
                       <span className="text-xs text-gray-600 hidden sm:inline">без прогноза</span>
                     )}
 
-                    {/* Идёт матч: показываем "LIVE" + прогноз пользователя рядом */}
                     {isLive && (
                       <div className="flex items-center gap-2">
                         {pred ? (
@@ -243,20 +195,17 @@ export function MatchesList({ byDate, userPredictions, isLoggedIn }: MatchesList
                       </div>
                     )}
 
-                    {/* Ещё не началось: прогноз пользователя */}
                     {!isFinished && !isLive && pred && (
                       <span className="text-lg font-black text-yellow-400">
                         📝 {pred.homeScore}:{pred.awayScore}
                       </span>
                     )}
 
-                    {/* Кнопка прогноза */}
                     {canPredict && isLoggedIn && (
                       <span className="bg-[#1a1500] text-yellow-400 font-black tracking-widest px-3 py-1 rounded-sm text-[9px] whitespace-nowrap">
                         ПРОГНОЗ →
                       </span>
                     )}
-                    {/* Стрелка — всегда показываем что строка кликабельна */}
                     <span className="text-gray-600 text-xs shrink-0">›</span>
                   </div>
                 </a>
