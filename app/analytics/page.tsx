@@ -7,6 +7,7 @@ import {
   calcContrarians,
   calcMatchesOfTour,
   calcTwins,
+  calcSniper,
 } from "@/lib/analytics-stats"
 
 const AVATAR_COLORS = [
@@ -56,6 +57,7 @@ export default async function AnalyticsPage() {
   const contrarians = calcContrarians(matches, predictions, users)
   const matchesOfTour = calcMatchesOfTour(matches, predictions, users)
   const twins = calcTwins(predictions, users)
+  const snipers = calcSniper(predictions, users)
 
   const topHot = hotHand.filter(e => e.streak > 0).slice(0, 5)
   const topContrarians = contrarians.filter(e => e.wins > 0).slice(0, 5)
@@ -165,7 +167,42 @@ export default async function AnalyticsPage() {
         )}
       </div>
 
-      {/* СЕКЦИЯ 3: ГОРЯЧАЯ РУКА */}
+      {/* СЕКЦИЯ 3: СНАЙПЕР */}
+      {snipers.length > 0 && (
+        <div className="bg-[#111] border border-[#1a1500] rounded-sm p-4">
+          <h2 className="text-[9px] font-bold text-yellow-400 tracking-widest uppercase mb-1">
+            Снайпер 🎯
+          </h2>
+          <p className="text-xs text-gray-600 mb-4">Больше всех угадал точный счёт</p>
+          <div className="space-y-3">
+            {snipers.map((entry, idx) => (
+              <div key={entry.userId}>
+                <div className="flex items-center justify-between mb-1">
+                  <div className="flex items-center gap-2">
+                    {idx === 0 && <span className="text-base">🥇</span>}
+                    {idx === 1 && <span className="text-base">🥈</span>}
+                    {idx === 2 && <span className="text-base">🥉</span>}
+                    {idx > 2 && <span className="text-xs text-gray-600 w-5">#{idx + 1}</span>}
+                    <span className="text-sm font-semibold text-gray-200">{entry.name}</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-xs text-gray-400">
+                    <span>{entry.exactCount} в счёт</span>
+                    <span className="text-yellow-400 font-bold">{entry.pct}%</span>
+                  </div>
+                </div>
+                <div className="bg-gray-800 rounded-full h-1.5">
+                  <div
+                    className="bg-yellow-500 h-1.5 rounded-full"
+                    style={{ width: `${entry.maxCount > 0 ? Math.round(entry.exactCount / entry.maxCount * 100) : 0}%` }}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* СЕКЦИЯ 4: ГОРЯЧАЯ РУКА */}
       <div className="bg-[#111] border border-[#1a1500] rounded-sm p-4">
         <h2 className="text-[9px] font-bold text-yellow-400 tracking-widest uppercase mb-4">
           Горячая рука 🔥

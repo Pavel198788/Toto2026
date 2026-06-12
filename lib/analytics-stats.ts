@@ -389,3 +389,51 @@ export function calcTwins(
 
   return pairs.sort((a, b) => b.pct - a.pct || b.commonMatches - a.commonMatches)
 }
+
+// ── Секция: снайпер ───────────────────────────────────────────────────────
+
+export type SniperEntry = {
+  userId: string
+  name: string
+  exactCount: number
+  totalFinished: number
+  pct: number
+  maxCount: number
+}
+
+const EXACT_PTS_SET = new Set([12, 25, 35])
+
+export function calcSniper(
+  predictions: PredRow[],
+  users: UserRow[]
+): SniperEntry[] {
+  const exactByUser = new Map<string, number>()
+  const totalByUser = new Map<string, number>()
+
+  for (const p of predictions) {
+    if (p.points === null) continue
+    totalByUser.set(p.userId, (totalByUser.get(p.userId) ?? 0) + 1)
+    if (EXACT_PTS_SET.has(p.points)) {
+      exactByUser.set(p.userId, (exactByUser.get(p.userId) ?? 0) + 1)
+    }
+  }
+
+  const entries = users
+    .map(u => {
+      const exactCount = exactByUser.get(u.id) ?? 0
+      const totalFinished = totalByUser.get(u.id) ?? 0
+      return {
+        userId: u.id,
+        name: u.name ?? "?",
+        exactCount,
+        totalFinished,
+        pct: totalFinished > 0 ? Math.round(exactCount / totalFinished * 100) : 0,
+        maxCount: 0,
+      }
+    })
+    .filter(e => e.exactCount > 0)
+    .sort((a, b) => b.exactCount - a.exactCount || b.pct - a.pct)
+
+  const maxCount = entries[0]?.exactCount ?? 0
+  return entries.map(e => ({ ...e, maxCount }))
+}
