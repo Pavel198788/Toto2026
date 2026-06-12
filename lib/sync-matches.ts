@@ -157,7 +157,7 @@ export async function runSync(mode: "today" | "all"): Promise<{ updatedMatches: 
         if (!eventsLoaded.get(match.id)) {
           const events = await getMatchEvents(fdMatch.id)
           if (events.length > 0) {
-            await prisma.match.update({ where: { id: match.id }, data: { events } })
+            await prisma.match.update({ where: { id: match.id }, data: { events: events as object[] } })
             eventsLoaded.set(match.id, true)
           }
         }
