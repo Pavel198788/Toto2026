@@ -21,6 +21,7 @@ export async function GET() {
     const data = await res.json()
     const matches = (data.data ?? []).map((g: {
       id: number
+      date: string
       status: number
       homeResult: number | null
       awayResult: number | null
@@ -31,7 +32,7 @@ export async function GET() {
       const isStarted = status !== "SCHEDULED"
       const homeScore = isStarted ? (status === "FINISHED" ? g.homeFTResult : g.homeResult) : null
       const awayScore = isStarted ? (status === "FINISHED" ? g.awayFTResult : g.awayResult) : null
-      return { externalId: g.id, status, homeScore, awayScore }
+      return { externalId: g.id, utcDate: g.date, status, homeScore, awayScore }
     })
 
     return NextResponse.json({ matches })
