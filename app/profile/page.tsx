@@ -4,7 +4,7 @@ import { redirect } from "next/navigation"
 import { prisma } from "@/lib/db"
 import {
   calcRank, calcStreak, buildMatchTourMap, calcPointsByStage,
-  calcTwin, calcComparison, type RankedUser,
+  calcTwin, calcComparison, calcUniqueness, type RankedUser,
 } from "@/lib/profile-stats"
 import { teamFlag } from "@/lib/flags"
 
@@ -69,6 +69,7 @@ export default async function ProfilePage() {
   const pointsByStage = calcPointsByStage(myPredictions, matchTourMap)
   const twin = calcTwin(userId, crossPredictions, rankedUsers)
   const comparison = calcComparison(userId, crossPredictions, myPredictions.map(p => p.match))
+  const uniqueness = calcUniqueness(userId, crossPredictions, myPredictions)
 
   const finished = myPredictions.filter(p => p.match.status === "FINISHED")
   const guessed = finished.filter(p => (p.points ?? 0) > 0).length
@@ -258,27 +259,30 @@ export default async function ProfilePage() {
             <p className="text-xs text-gray-500 mt-1">точных счётов</p>
           </div>
 
-          {/* 5б. Сравнение с группой */}
-          {finished.length > 0 && (
+          {/* 5б. Насколько ты уникален */}
+          {uniqueness.total > 0 && (
             <div className="bg-[#111] border border-[#1a1500] rounded-sm p-4">
-              <p className="text-xs text-gray-400 mb-3">СРАВНЕНИЕ С ГРУППОЙ</p>
-              <div className="space-y-2 text-sm">
+              <p className="text-xs text-gray-400 mb-3">НАСКОЛЬКО ТЫ УНИКАЛЕН</p>
+              <div className="text-center mb-3">
+                <p className="text-3xl font-black text-yellow-400">{uniqueness.pct}%</p>
+                <p className="text-[10px] text-gray-500 mt-0.5">шёл против толпы</p>
+              </div>
+              <div className="space-y-1.5 text-xs">
                 <div className="flex justify-between">
-                  <span className="text-gray-400 text-xs">Угадал только ты</span>
-                  <span className="font-bold text-green-400">{comparison.uniquelyCorrect}</span>
+                  <span className="text-gray-500">против большинства</span>
+                  <span className="text-gray-300 font-medium">{uniqueness.uniqueCount} / {uniqueness.total}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-400 text-xs">Большинство угадали, ты нет</span>
-                  <span className="font-bold text-red-400">{comparison.missedByOthersGot}</span>
+                  <span className="text-gray-500">из них угадал</span>
+                  <span className={uniqueness.uniqueCorrect > 0 ? "text-green-400 font-bold" : "text-gray-600"}>
+                    {uniqueness.uniqueCorrect}
+                  </span>
                 </div>
-                {comparison.rarestMatch && (
-                  <div className="border-t border-gray-800 pt-2">
-                    <p className="text-xs text-gray-500 mb-1">Самый редкий прогноз</p>
-                    <p className="text-xs text-white">
-                      {teamFlag(comparison.rarestMatch.homeTeam)} {comparison.rarestMatch.homeTeam} — {teamFlag(comparison.rarestMatch.awayTeam)} {comparison.rarestMatch.awayTeam}
-                    </p>
-                  </div>
-                )}
+              </div>
+              <div className="mt-3 pt-2 border-t border-[#1a1500] text-center">
+                <span className="text-[10px] font-black text-yellow-400 tracking-widest">
+                  {uniqueness.archetype.toUpperCase()}
+                </span>
               </div>
             </div>
           )}

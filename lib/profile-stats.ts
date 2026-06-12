@@ -169,3 +169,64 @@ export function calcComparison(
 
   return { uniquelyCorrect, missedByOthersGot, rarestMatch }
 }
+
+export type UniquenessStats = {
+  pct: number
+  uniqueCount: number
+  total: number
+  uniqueCorrect: number
+  archetype: string
+}
+
+function outcomeOf(h: number, a: number): "H" | "A" | "D" {
+  return h > a ? "H" : h < a ? "A" : "D"
+}
+
+export function calcUniqueness(
+  userId: string,
+  allPredictions: CrossPrediction[],
+  myPredictions: Array<{ matchId: string; homeScore: number; awayScore: number; points: number | null; match: { status: string } }>
+): UniquenessStats {
+  const finishedIds = new Set(
+    myPredictions.filter(p => p.match.status === "FINISHED").map(p => p.matchId)
+  )
+  const othersByMatch = new Map<string, CrossPrediction[]>()
+  for (const p of allPredictions) {
+    if (p.userId === userId || !finishedIds.has(p.matchId)) continue
+    if (!othersByMatch.has(p.matchId)) othersByMatch.set(p.matchId, [])
+    othersByMatch.get(p.matchId)!.push(p)
+  }
+
+  let total = 0
+  let uniqueCount = 0
+  let uniqueCorrect = 0
+
+  for (const pred of myPredictions) {
+    if (!finishedIds.has(pred.matchId)) continue
+    const others = othersByMatch.get(pred.matchId) ?? []
+    if (others.length < 2) continue
+
+    const votes = { H: 0, A: 0, D: 0 }
+    for (const o of others) votes[outcomeOf(o.homeScore, o.awayScore)]++
+    const [topOutcome, topCount] = (Object.entries(votes) as [string, number][])
+      .sort((a, b) => b[1] - a[1])[0]
+
+    if (topCount / others.length <= 0.5) continue // no clear majority
+
+    total++
+    const myOutcome = outcomeOf(pred.homeScore, pred.awayScore)
+    if (myOutcome !== topOutcome) {
+      uniqueCount++
+      if ((pred.points ?? 0) > 0) uniqueCorrect++
+    }
+  }
+
+  const pct = total > 0 ? Math.round(uniqueCount / total * 100) : 0
+  const archetype =
+    pct <= 15 ? "Человек толпы" :
+    pct <= 30 ? "Умеренный" :
+    pct <= 50 ? "Самобытный" :
+    pct <= 65 ? "Бунтарь" : "Анархист"
+
+  return { pct, uniqueCount, total, uniqueCorrect, archetype }
+}
