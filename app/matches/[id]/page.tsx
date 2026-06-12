@@ -6,6 +6,22 @@ import { Badge } from "@/components/ui/badge"
 import { PredictionCountdown } from "@/components/prediction-countdown"
 import { teamFlag } from "@/lib/flags"
 
+type MatchEvent = {
+  type: "goal" | "own_goal" | "penalty_scored" | "penalty_missed" | "red_card"
+  team: "home" | "away"
+  player: string
+  minute: number
+  minuteExtra?: number
+}
+
+const EVENT_ICON: Record<MatchEvent["type"], string> = {
+  goal: "⚽",
+  own_goal: "⚽",
+  penalty_scored: "⚽ П",
+  penalty_missed: "✗ П",
+  red_card: "🟥",
+}
+
 const STAGE_LABELS: Record<string, string> = {
   GROUP: "Групповой этап",
   R16: "1/8 финала",
@@ -53,6 +69,9 @@ export default async function MatchPage({ params }: { params: Promise<{ id: stri
   }
 
   const isLive = match.status === "IN_PLAY" || match.status === "PAUSED"
+  const events = (match.events ?? []) as MatchEvent[]
+  const homeEvents = events.filter(e => e.team === "home")
+  const awayEvents = events.filter(e => e.team === "away")
 
   return (
     <div className="max-w-lg mx-auto space-y-6">
@@ -91,6 +110,53 @@ export default async function MatchPage({ params }: { params: Promise<{ id: stri
             {match.homeScore}:{match.awayScore}
           </p>
           {match.winner && <p className="text-yellow-400 mt-2">Победитель: {match.winner}</p>}
+        </div>
+      )}
+
+      {/* События матча */}
+      {events.length > 0 && (
+        <div className="bg-gray-900 border border-gray-800 rounded-lg p-4">
+          <div className="grid grid-cols-[1fr_auto_1fr] gap-x-2 gap-y-2 items-start">
+            {/* Заголовок */}
+            <p className="text-xs text-gray-400 text-right truncate">{match.homeTeam}</p>
+            <div className="w-px" />
+            <p className="text-xs text-gray-400 truncate">{match.awayTeam}</p>
+
+            {/* События по порядку минут */}
+            {events
+              .slice()
+              .sort((a, b) => a.minute - b.minute || (a.minuteExtra ?? 0) - (b.minuteExtra ?? 0))
+              .map((e, i) => {
+                const minStr = e.minuteExtra ? `${e.minute}+${e.minuteExtra}'` : `${e.minute}'`
+                const icon = EVENT_ICON[e.type]
+                const isOwn = e.type === "own_goal"
+                const isMissed = e.type === "penalty_missed"
+                const textColor = e.type === "red_card"
+                  ? "text-red-500"
+                  : isMissed
+                  ? "text-gray-500"
+                  : "text-white"
+                return e.team === "home" ? (
+                  <div key={i} className="contents">
+                    <div className="flex items-center justify-end gap-1 text-right">
+                      <div className={`text-sm font-medium ${textColor}`}>{e.player}{isOwn ? " (аг)" : ""}</div>
+                      <div className="text-gray-400 text-xs shrink-0">{minStr} {icon}</div>
+                    </div>
+                    <div className="border-l border-gray-700 self-stretch mx-auto w-px" />
+                    <div />
+                  </div>
+                ) : (
+                  <div key={i} className="contents">
+                    <div />
+                    <div className="border-l border-gray-700 self-stretch mx-auto w-px" />
+                    <div className="flex items-center gap-1">
+                      <div className="text-gray-400 text-xs shrink-0">{icon} {minStr}</div>
+                      <div className={`text-sm font-medium ${textColor}`}>{e.player}{isOwn ? " (аг)" : ""}</div>
+                    </div>
+                  </div>
+                )
+              })}
+          </div>
         </div>
       )}
 

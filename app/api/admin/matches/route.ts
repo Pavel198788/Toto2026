@@ -32,14 +32,15 @@ export async function PATCH(req: NextRequest) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 })
   }
 
-  const { id, city, country } = await req.json()
+  const { id, city, country, events } = await req.json()
   if (!id) return NextResponse.json({ error: "id required" }, { status: 400 })
 
   const match = await prisma.match.update({
     where: { id },
     data: {
-      city: city?.trim() || null,
-      country: country?.trim() || null,
+      ...(city !== undefined && { city: city?.trim() || null }),
+      ...(country !== undefined && { country: country?.trim() || null }),
+      ...(events !== undefined && { events }),
     },
   })
 

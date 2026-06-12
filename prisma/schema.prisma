@@ -34,6 +34,7 @@ model Match {
   venue       String?
   city        String?
   country     String?
+  events      Json?
   predictions Prediction[]
   updatedAt   DateTime     @updatedAt
 }
