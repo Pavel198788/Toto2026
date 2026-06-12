@@ -1,6 +1,5 @@
 import { prisma } from "@/lib/db"
 import { teamFlag } from "@/lib/flags"
-import { buildMatchTourMap } from "@/lib/profile-stats"
 import {
   calcRecentDelta,
   calcCumulative,
@@ -8,7 +7,7 @@ import {
   calcContrarians,
   calcMatchesOfTour,
 } from "@/lib/analytics-stats"
-import { AnalyticsRaceChart } from "@/components/analytics-race-chart"
+import { AnalyticsHeatmap } from "@/components/analytics-heatmap"
 
 const AVATAR_COLORS = [
   "bg-yellow-600", "bg-green-700", "bg-blue-700", "bg-orange-700",
@@ -56,22 +55,6 @@ export default async function AnalyticsPage() {
   const hotHand = calcHotHand(matches, predictions, users)
   const contrarians = calcContrarians(matches, predictions, users)
   const matchesOfTour = calcMatchesOfTour(matches, predictions, users)
-
-  const leaderUserId = cumulative
-    .map(s => ({ id: s.userId, pts: s.points[s.points.length - 1] ?? 0 }))
-    .sort((a, b) => b.pts - a.pts)[0]?.id ?? ""
-
-  const groupMatches = matches
-    .filter(m => m.stage === "GROUP")
-    .sort((a, b) => a.kickoff.getTime() - b.kickoff.getTime())
-  const tourMap = buildMatchTourMap(groupMatches.map(m => ({ id: m.id, group: m.group })))
-  const tourBoundaries: number[] = []
-  let prevTour: string | null = null
-  matches.forEach((m, i) => {
-    const t = tourMap[m.id]
-    if (t && t !== prevTour && prevTour !== null) tourBoundaries.push(i)
-    if (t) prevTour = t
-  })
 
   const topHot = hotHand.filter(e => e.streak > 0).slice(0, 5)
   const topContrarians = contrarians.filter(e => e.wins > 0).slice(0, 5)
@@ -132,16 +115,14 @@ export default async function AnalyticsPage() {
         </div>
       </div>
 
-      {/* СЕКЦИЯ 2: ДИНАМИКА */}
+      {/* СЕКЦИЯ 2: ТЕПЛОВАЯ КАРТА */}
       <div className="bg-[#111] border border-[#1a1500] rounded-sm p-4">
         <h2 className="text-[9px] font-bold text-yellow-400 tracking-widest uppercase mb-4">
-          Динамика гонки
+          Матч за матчем
         </h2>
-        <AnalyticsRaceChart
+        <AnalyticsHeatmap
           series={cumulative}
           matchCount={matches.length}
-          tourBoundaries={tourBoundaries}
-          leaderUserId={leaderUserId}
         />
       </div>
 
