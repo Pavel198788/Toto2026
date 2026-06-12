@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect, useCallback } from "react"
-import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { teamFlag } from "@/lib/flags"
 
 export interface SerializedMatch {
@@ -66,6 +66,7 @@ function outcome(h: number, a: number) {
 }
 
 export function MatchesList({ byDate, userPredictions, isLoggedIn }: MatchesListProps) {
+  const router = useRouter()
   const [liveScores, setLiveScores] = useState<Record<number, LiveMatch>>({})
 
   const fetchLiveScores = useCallback(async () => {
@@ -141,9 +142,12 @@ export function MatchesList({ byDate, userPredictions, isLoggedIn }: MatchesList
                   : null
 
               return (
-                <Link
+                <div
                   key={match.id}
-                  href={`/matches/${match.id}`}
+                  role="link"
+                  tabIndex={0}
+                  onClick={() => router.push(`/matches/${match.id}`)}
+                  onKeyDown={(e) => e.key === "Enter" && router.push(`/matches/${match.id}`)}
                   className="py-3 flex items-center gap-3 hover:bg-[#111]/60 -mx-2 px-2 rounded-sm transition-colors cursor-pointer"
                 >
                   {/* Время + город (mobile) */}
@@ -259,7 +263,7 @@ export function MatchesList({ byDate, userPredictions, isLoggedIn }: MatchesList
                     {/* Стрелка — всегда показываем что строка кликабельна */}
                     <span className="text-gray-600 text-xs shrink-0">›</span>
                   </div>
-                </Link>
+                </div>
               )
             })}
           </div>
