@@ -1,7 +1,7 @@
 // lib/sync-matches.ts
 import type { Stage as PrismaStage, MatchStatus } from "@prisma/client"
 import { prisma } from "@/lib/db"
-import { getTodayMatches, getAllMatches, mapStage, mapStatus, resolveVenueLocation } from "@/lib/football-api"
+import { getTodayMatches, getAllMatches, mapStage, mapStatus, resolveVenueLocation, getMatchEvents } from "@/lib/football-api"
 import { calculatePoints } from "@/lib/scoring"
 import { syncToGoogleSheets } from "@/lib/google-sheets"
 import { fetchSportsRuVenues } from "@/lib/sports-ru"
@@ -38,7 +38,7 @@ export async function runSync(mode: "today" | "all"): Promise<{ updatedMatches: 
   // использует свои IDs. Первый синк обновит externalId на AS-IDs через матчинг
   // по canonTeam(homeTeam) + canonTeam(awayTeam) + дата (UTC).
   const dbMatches = await prisma.match.findMany({
-    select: { id: true, homeTeam: true, awayTeam: true, kickoff: true, externalId: true },
+    select: { id: true, homeTeam: true, awayTeam: true, kickoff: true, externalId: true, events: true },
   })
 
   // Ключ: "canon_home|canon_away|YYYY-MM-DD"
@@ -50,8 +50,10 @@ export async function runSync(mode: "today" | "all"): Promise<{ updatedMatches: 
   }
   // Ключ: externalId → match.id (для уже мигрированных записей)
   const byExtId = new Map<number, string>()
+  const eventsLoaded = new Map<string, boolean>() // match.id → events уже есть
   for (const m of dbMatches) {
     byExtId.set(m.externalId, m.id)
+    eventsLoaded.set(m.id, m.events != null)
   }
 
   const CHUNK = 10
@@ -150,6 +152,16 @@ export async function runSync(mode: "today" | "all"): Promise<{ updatedMatches: 
           })
           return prisma.prediction.update({ where: { id: pred.id }, data: { points } })
         }))
+
+        // Загружаем события матча (голы, карточки) если ещё не сохранены
+        if (!eventsLoaded.get(match.id)) {
+          const events = await getMatchEvents(fdMatch.id)
+          if (events.length > 0) {
+            await prisma.match.update({ where: { id: match.id }, data: { events } })
+            eventsLoaded.set(match.id, true)
+          }
+        }
+
         return true
       }
       return false

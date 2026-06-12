@@ -1,6 +1,55 @@
 // lib/football-api.ts — sstats.net API (без ключа, 300 req/min)
 const SSTATS_BASE = "https://api.sstats.net"
 
+export type MatchEventType = "goal" | "own_goal" | "penalty_scored" | "penalty_missed" | "red_card"
+
+export interface MatchEventItem {
+  type: MatchEventType
+  team: "home" | "away"
+  player: string
+  minute: number
+  minuteExtra?: number
+}
+
+function mapSstatsEventType(name: string): MatchEventType | null {
+  const n = name.toLowerCase()
+  if (n.includes("own goal")) return "own_goal"
+  if (n.includes("penalty goal") || n.includes("goal (penalty)")) return "penalty_scored"
+  if (n.includes("penalty missed") || n.includes("missed penalty")) return "penalty_missed"
+  if (n.includes("normal goal")) return "goal"
+  if (n.includes("yellow-red card") || n.includes("red card")) return "red_card"
+  return null
+}
+
+export async function getMatchEvents(gameId: number): Promise<MatchEventItem[]> {
+  try {
+    const res = await fetch(`${SSTATS_BASE}/games/${gameId}`, { next: { revalidate: 0 } })
+    if (!res.ok) return []
+    const json = await res.json()
+    const data = json.data
+    if (!data) return []
+
+    const homeTeamId: number = data.game?.homeTeam?.id
+    const events: Array<{ id: number; teamId: number; elapsed: number; extra: number | null; type: number; name: string; player?: { name: string } }> = data.events ?? []
+
+    const result: MatchEventItem[] = []
+    for (const e of events) {
+      const eventType = mapSstatsEventType(e.name ?? "")
+      if (!eventType) continue
+      result.push({
+        type: eventType,
+        team: e.teamId === homeTeamId ? "home" : "away",
+        player: e.player?.name ?? "",
+        minute: e.elapsed,
+        ...(e.extra ? { minuteExtra: e.extra } : {}),
+      })
+    }
+    return result.sort((a, b) => a.minute - b.minute || (a.minuteExtra ?? 0) - (b.minuteExtra ?? 0))
+  } catch {
+    return []
+  }
+}
+
 export interface FDMatch {
   id: number
   homeTeam: { name: string; shortName: string }
