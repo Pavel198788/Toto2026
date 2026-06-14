@@ -1,0 +1,14 @@
+{
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node /Users/nichegosebe/toto-2026/.claude/hooks/verify-on-stop.js"
+          }
+        ]
+      }
+    ]
+  }
+}
