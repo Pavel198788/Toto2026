@@ -11,6 +11,7 @@ export interface SerializedMatch {
   homeScore: number | null
   awayScore: number | null
   status: string
+  winner?: string | null
   city: string | null
   country: string | null
 }
@@ -32,6 +33,7 @@ interface MatchesListProps {
   userPredictions: Record<string, SerializedPrediction>
   isLoggedIn: boolean
   activeTab?: string
+  showAdvance?: boolean
 }
 
 const STAGE_LABELS: Record<string, string> = {
@@ -47,7 +49,7 @@ function outcome(h: number, a: number) {
   return h > a ? "H" : h < a ? "A" : "D"
 }
 
-export function MatchesList({ byDate, userPredictions, isLoggedIn, activeTab }: MatchesListProps) {
+export function MatchesList({ byDate, userPredictions, isLoggedIn, activeTab, showAdvance }: MatchesListProps) {
   const now = Date.now()
   const fromQuery = activeTab && activeTab !== "all" ? `?from=${activeTab}` : ""
 
@@ -63,6 +65,10 @@ export function MatchesList({ byDate, userPredictions, isLoggedIn, activeTab }: 
             {dayMatches.map((match) => {
               const isFinished = match.status === "FINISHED"
               const isLive = match.status === "IN_PLAY" || match.status === "PAUSED"
+
+              const advanced = showAdvance && isFinished && match.winner
+              const homeWon = advanced && match.winner === match.homeTeam
+              const awayWon = advanced && match.winner === match.awayTeam
 
               const kickoff = new Date(match.kickoff)
               const mskDate = new Date(kickoff.getTime() + 3 * 60 * 60 * 1000)
@@ -127,7 +133,9 @@ export function MatchesList({ byDate, userPredictions, isLoggedIn, activeTab }: 
                   {/* Команды + счёт */}
                   <div className="flex-1 flex items-center gap-2 min-w-0">
                     <div className="flex-1 flex items-center justify-end gap-1 min-w-0">
-                      <span className="font-medium text-sm truncate">{match.homeTeam}</span>
+                      <span className={`font-medium text-sm truncate ${homeWon ? "text-yellow-400 font-bold" : ""}`}>
+                        {match.homeTeam}{homeWon ? " ↑" : ""}
+                      </span>
                       <span className="shrink-0 text-base leading-none">{teamFlag(match.homeTeam)}</span>
                     </div>
 
@@ -154,7 +162,9 @@ export function MatchesList({ byDate, userPredictions, isLoggedIn, activeTab }: 
 
                     <div className="flex-1 flex items-center gap-1 min-w-0">
                       <span className="shrink-0 text-base leading-none">{teamFlag(match.awayTeam)}</span>
-                      <span className="font-medium text-sm truncate">{match.awayTeam}</span>
+                      <span className={`font-medium text-sm truncate ${awayWon ? "text-yellow-400 font-bold" : ""}`}>
+                        {awayWon ? "↑ " : ""}{match.awayTeam}
+                      </span>
                     </div>
                   </div>
 
