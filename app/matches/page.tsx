@@ -133,6 +133,7 @@ export default async function MatchesPage({
         byDate={byDate}
         userPredictions={userPredictions}
         isLoggedIn={!!session?.user}
+        activeTab={tab}
       />
     </div>
   )

@@ -31,6 +31,7 @@ interface MatchesListProps {
   byDate: DateGroup[]
   userPredictions: Record<string, SerializedPrediction>
   isLoggedIn: boolean
+  activeTab?: string
 }
 
 const STAGE_LABELS: Record<string, string> = {
@@ -46,8 +47,9 @@ function outcome(h: number, a: number) {
   return h > a ? "H" : h < a ? "A" : "D"
 }
 
-export function MatchesList({ byDate, userPredictions, isLoggedIn }: MatchesListProps) {
+export function MatchesList({ byDate, userPredictions, isLoggedIn, activeTab }: MatchesListProps) {
   const now = Date.now()
+  const fromQuery = activeTab && activeTab !== "all" ? `?from=${activeTab}` : ""
 
   return (
     <>
@@ -97,7 +99,7 @@ export function MatchesList({ byDate, userPredictions, isLoggedIn }: MatchesList
               return (
                 <a
                   key={match.id}
-                  href={`/matches/${match.id}`}
+                  href={`/matches/${match.id}${fromQuery}`}
                   className="py-3 flex items-center gap-3 hover:bg-[#111]/60 -mx-2 px-2 rounded-sm transition-colors cursor-pointer"
                 >
                   {/* Время + город (mobile) */}

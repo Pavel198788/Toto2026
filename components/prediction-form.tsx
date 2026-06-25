@@ -20,9 +20,10 @@ interface PredictionFormProps {
   awayTeam: string
   isPlayoff: boolean
   nextMatchId?: string | null
+  backTab?: string | null
 }
 
-export function PredictionForm({ matchId, homeTeam, awayTeam, isPlayoff, nextMatchId }: PredictionFormProps) {
+export function PredictionForm({ matchId, homeTeam, awayTeam, isPlayoff, nextMatchId, backTab }: PredictionFormProps) {
   const router = useRouter()
   const [homeScore, setHomeScore] = useState("")
   const [awayScore, setAwayScore] = useState("")

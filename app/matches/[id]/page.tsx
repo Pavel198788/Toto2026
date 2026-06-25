@@ -1,3 +1,4 @@
+import Link from "next/link"
 import { notFound } from "next/navigation"
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/db"
@@ -33,8 +34,16 @@ const STAGE_LABELS: Record<string, string> = {
 
 const PLAYOFF_STAGES = new Set(["R16", "QUARTERFINAL", "SEMIFINAL", "THIRD_PLACE", "FINAL"])
 
-export default async function MatchPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function MatchPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ id: string }>
+  searchParams: Promise<{ from?: string }>
+}) {
   const { id } = await params
+  const { from } = await searchParams
+  const backHref = from ? `/matches?tab=${from}` : "/matches"
   const session = await auth()
 
   const match = await prisma.match.findUnique({ where: { id } })
@@ -88,6 +97,13 @@ export default async function MatchPage({ params }: { params: Promise<{ id: stri
 
   return (
     <div className="max-w-lg mx-auto space-y-6">
+      <Link
+        href={backHref}
+        className="inline-flex items-center gap-1 text-sm tracking-widest uppercase text-gray-400 hover:text-gray-200 transition-colors"
+      >
+        ← К матчам
+      </Link>
+
       {/* Заголовок */}
       <div className="text-center">
         <Badge variant="outline" className="mb-4 border-gray-700 text-gray-400">
@@ -193,6 +209,7 @@ export default async function MatchPage({ params }: { params: Promise<{ id: stri
               awayTeam={match.awayTeam}
               isPlayoff={PLAYOFF_STAGES.has(match.stage)}
               nextMatchId={nextMatch?.id ?? null}
+              backTab={from ?? null}
             />
           </>
         ) : (
