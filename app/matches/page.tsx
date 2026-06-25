@@ -11,12 +11,18 @@ const TABS = [
   { key: "tour1",        label: "Тур 1" },
   { key: "tour2",        label: "Тур 2" },
   { key: "tour3",        label: "Тур 3" },
+  { key: "playoff",      label: "Плей-офф" },
+  { key: "ROUND_OF_32",  label: "1/16 финала" },
   { key: "R16",          label: "1/8 финала" },
   { key: "QUARTERFINAL", label: "1/4 финала" },
   { key: "SEMIFINAL",    label: "1/2 финала" },
   { key: "THIRD_PLACE",  label: "За 3-е место" },
   { key: "FINAL",        label: "Финал" },
 ]
+
+const PLAYOFF_STAGES = new Set([
+  "ROUND_OF_32", "R16", "QUARTERFINAL", "SEMIFINAL", "THIRD_PLACE", "FINAL",
+])
 
 export default async function MatchesPage({
   searchParams,
@@ -55,6 +61,7 @@ export default async function MatchesPage({
     const t = getMatchTab(m)
     counts[t] = (counts[t] ?? 0) + 1
   }
+  counts["playoff"] = allMatches.filter((m) => PLAYOFF_STAGES.has(m.stage)).length
 
   const tabs = TABS.map((t) => ({ ...t, count: counts[t.key] ?? 0 })).filter(
     (t) => t.key === "all" || t.count > 0
@@ -64,6 +71,8 @@ export default async function MatchesPage({
   const matches =
     tab === "all"
       ? allMatches
+      : tab === "playoff"
+      ? allMatches.filter((m) => PLAYOFF_STAGES.has(m.stage))
       : allMatches.filter((m) => getMatchTab(m) === tab)
 
   // User predictions
@@ -105,6 +114,7 @@ export default async function MatchesPage({
       homeScore: match.homeScore,
       awayScore: match.awayScore,
       status: match.status,
+      winner: match.winner,
       city: match.city,
       country: match.country,
     }
