@@ -78,7 +78,7 @@ export function AnalyticsRaceChart({ series, matchCount, tourBoundaries, leaderU
 
   return (
     <div className="relative">
-      <div className="overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      <div className="overflow-x-auto touch-pan-x overscroll-x-contain [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         <svg
           width={svgW}
           height={svgH}

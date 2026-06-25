@@ -15,7 +15,7 @@ interface MatchesTabsProps {
 
 export function MatchesTabs({ tabs, activeTab }: MatchesTabsProps) {
   return (
-    <div className="flex gap-2 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden pb-1 -mx-2 px-2">
+    <div className="flex gap-2 overflow-x-auto overflow-y-hidden touch-pan-x overscroll-x-contain [scrollbar-width:none] [&::-webkit-scrollbar]:hidden pb-1 -mx-2 px-2">
       {tabs.map((tab) => (
         <Link
           key={tab.key}

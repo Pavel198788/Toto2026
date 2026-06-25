@@ -74,7 +74,7 @@ export default async function AnalyticsPage() {
         <h2 className="text-[9px] font-bold text-yellow-400 tracking-widest uppercase mb-3">
           Гонка · последние {recentN} матчей
         </h2>
-        <div className="overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden pb-1">
+        <div className="overflow-x-auto overflow-y-hidden touch-pan-x overscroll-x-contain [scrollbar-width:none] [&::-webkit-scrollbar]:hidden pb-1">
           <div className="flex gap-3 w-max">
             {deltas.map(entry => (
               <div

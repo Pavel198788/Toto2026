@@ -23,7 +23,7 @@ export function AnalyticsHeatmap({ series, matchCount }: Props) {
   if (rows.length === 0 || matchCount === 0) return null
 
   return (
-    <div className="overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+    <div className="overflow-x-auto touch-pan-x overscroll-x-contain [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
       <table className="border-collapse" style={{ tableLayout: "fixed" }}>
         <thead>
           <tr>

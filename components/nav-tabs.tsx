@@ -19,7 +19,7 @@ export function NavTabs({ isAdmin }: { isAdmin?: boolean }) {
   return (
     <div className="relative border-t border-[#1a1500]">
       <div className="container mx-auto px-4">
-        <div className="flex overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <div className="flex overflow-x-auto overflow-y-hidden touch-pan-x overscroll-x-contain [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {TABS.map((tab) => (
             <Link
               key={tab.href}
