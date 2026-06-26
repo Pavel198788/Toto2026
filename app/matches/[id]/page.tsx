@@ -32,7 +32,7 @@ const STAGE_LABELS: Record<string, string> = {
   FINAL: "Финал",
 }
 
-const PLAYOFF_STAGES = new Set(["R16", "QUARTERFINAL", "SEMIFINAL", "THIRD_PLACE", "FINAL"])
+const PLAYOFF_STAGES = new Set(["ROUND_OF_32", "R16", "QUARTERFINAL", "SEMIFINAL", "THIRD_PLACE", "FINAL"])
 
 export default async function MatchPage({
   params,

@@ -39,10 +39,23 @@ export function PredictionForm({ matchId, homeTeam, awayTeam, isPlayoff, nextMat
   const submittingRef = useRef(false)
   const [error, setError] = useState("")
 
+  const bothScores = Boolean(homeScore && awayScore)
+  const isTied = bothScores && homeScore === awayScore
+  // При решающем счёте победитель однозначно выводится из счёта,
+  // при ничьей — выбирается вручную (серия пенальти).
+  const effectiveWinner = !isPlayoff
+    ? null
+    : isTied
+    ? (winner || null)
+    : bothScores
+    ? (Number(homeScore) > Number(awayScore) ? homeTeam : awayTeam)
+    : null
+  const needsWinnerPick = isPlayoff && isTied && !winner
+
   function handleSubmitClick(e: React.FormEvent) {
     e.preventDefault()
     if (!homeScore || !awayScore) return
-    if (isPlayoff && !winner) return
+    if (needsWinnerPick) return
     setShowConfirm(true)
   }
 
@@ -59,7 +72,7 @@ export function PredictionForm({ matchId, homeTeam, awayTeam, isPlayoff, nextMat
         matchId,
         homeScore: Number(homeScore),
         awayScore: Number(awayScore),
-        winner: isPlayoff ? winner : null,
+        winner: effectiveWinner,
       }),
     })
 
@@ -79,8 +92,6 @@ export function PredictionForm({ matchId, homeTeam, awayTeam, isPlayoff, nextMat
       setShowConfirm(false)
     }
   }
-
-  const isTied = homeScore && awayScore && homeScore === awayScore
 
   return (
     <>
@@ -111,9 +122,9 @@ export function PredictionForm({ matchId, homeTeam, awayTeam, isPlayoff, nextMat
           </div>
         </div>
 
-        {isPlayoff && (
+        {isPlayoff && isTied && (
           <div className="space-y-2">
-            <Label>Победитель (включая пенальти)</Label>
+            <Label>Кто пройдёт дальше? (серия пенальти)</Label>
             <div className="flex gap-3">
               {[homeTeam, awayTeam].map((team) => (
                 <button
@@ -130,9 +141,9 @@ export function PredictionForm({ matchId, homeTeam, awayTeam, isPlayoff, nextMat
                 </button>
               ))}
             </div>
-            {isTied && !winner && (
+            {!winner && (
               <p className="text-yellow-400 text-xs">
-                При ничьей укажите победителя (в серии пенальти)
+                При ничьей укажите победителя серии пенальти
               </p>
             )}
           </div>
@@ -143,7 +154,7 @@ export function PredictionForm({ matchId, homeTeam, awayTeam, isPlayoff, nextMat
         <Button
           type="submit"
           className="w-full bg-yellow-500 hover:bg-yellow-400 text-black font-bold"
-          disabled={!homeScore || !awayScore || (isPlayoff && !winner)}
+          disabled={!homeScore || !awayScore || needsWinnerPick}
         >
           Сохранить прогноз
         </Button>
