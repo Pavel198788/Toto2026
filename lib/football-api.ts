@@ -84,12 +84,13 @@ async function fetchSstats(path: string): Promise<{ data?: SstatsGame[] }> {
   return res.json()
 }
 
-// status: 2=NotStarted 3=1stHalf 4=2ndHalf 5=HalfTime 6=ET 7=Penalties 8=Finished 9=Postponed
+// status: 2=NotStarted 3=1stHalf 4=2ndHalf 5=HalfTime 6=ET 7=Penalties
+//         8=Finished 9="Finished After Extra Time" 10="Finished After Penalty"
+// Коды 8/9/10 — все завершённые (в т.ч. доп. время и серия пенальти).
 function sstatsStatus(code: number): string {
-  if (code === 8) return "FINISHED"
+  if ([8, 9, 10].includes(code)) return "FINISHED"
   if (code === 5) return "PAUSED"
   if ([3, 4, 6, 7].includes(code)) return "IN_PLAY"
-  if (code === 9) return "POSTPONED"
   return "SCHEDULED"
 }
 
@@ -114,12 +115,10 @@ function toFDMatch(g: SstatsGame): FDMatch | null {
   const status = sstatsStatus(g.status)
   const isStarted = status !== "SCHEDULED"
 
-  const homeScore = isStarted
-    ? (status === "FINISHED" ? g.homeFTResult : g.homeResult)
-    : null
-  const awayScore = isStarted
-    ? (status === "FINISHED" ? g.awayFTResult : g.awayResult)
-    : null
+  // homeResult/awayResult — итоговый счёт с учётом доп. времени (для обычных
+  // матчей совпадает с FT). Для матчей после ET/пенальти это верный итог.
+  const homeScore = isStarted ? g.homeResult : null
+  const awayScore = isStarted ? g.awayResult : null
 
   let winner: "HOME_TEAM" | "AWAY_TEAM" | "DRAW" | null = null
   if (status === "FINISHED" && homeScore !== null && awayScore !== null) {

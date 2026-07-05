@@ -38,8 +38,12 @@ export async function runSync(mode: "today" | "all"): Promise<{ updatedMatches: 
   // использует свои IDs. Первый синк обновит externalId на AS-IDs через матчинг
   // по canonTeam(homeTeam) + canonTeam(awayTeam) + дата (UTC).
   const dbMatches = await prisma.match.findMany({
-    select: { id: true, homeTeam: true, awayTeam: true, kickoff: true, externalId: true, events: true },
+    select: { id: true, homeTeam: true, awayTeam: true, kickoff: true, externalId: true, events: true, winner: true },
   })
+  // Победитель, уже сохранённый в БД (напр. вручную выставленный победитель
+  // серии пенальти) — фид его не отдаёт, поэтому не затираем значением null.
+  const winnerById = new Map<string, string | null>()
+  for (const m of dbMatches) winnerById.set(m.id, m.winner)
 
   // Ключ: "canon_home|canon_away|YYYY-MM-DD"
   const byTeamDate = new Map<string, string>() // → match.id
@@ -105,7 +109,7 @@ export async function runSync(mode: "today" | "all"): Promise<{ updatedMatches: 
             homeScore,
             awayScore,
             status: status as MatchStatus,
-            winner,
+            winner: winner ?? winnerById.get(existingId) ?? null,
             ...(venueStr !== null ? { venue: venueStr } : {}),
             ...(city !== null ? { city } : {}),
             ...(country !== null ? { country } : {}),
