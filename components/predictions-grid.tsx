@@ -2,6 +2,7 @@
 
 import { useEffect } from "react"
 import { useRouter } from "next/navigation"
+import { teamFlag } from "@/lib/flags"
 
 interface GridMatch {
   id: string
@@ -119,6 +120,14 @@ export function PredictionsGrid({ matches, participants, currentUserId }: Predic
                           <div className="font-medium">
                             {pred.homeScore}:{pred.awayScore}
                           </div>
+                          {pred.homeScore === pred.awayScore && pred.winner && (
+                            <div
+                              className="text-xs leading-none"
+                              title={`Проходит по пенальти: ${pred.winner}`}
+                            >
+                              {teamFlag(pred.winner)}
+                            </div>
+                          )}
                           {pred.points != null && (
                             <div
                               className={`text-xs font-bold ${
