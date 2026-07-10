@@ -7,6 +7,7 @@ import { computeBonusPoints } from "@/lib/bonus-utils"
 interface BonusData {
   predictions: { type: string; team: string; points: number | null }[]
   teams: string[]
+  eliminatedTeams: string[]
   locked: boolean
   currentUserId: string
 }
@@ -122,6 +123,18 @@ export default function BonusPage() {
   // Compute bonus points summary if predictions exist and some points assigned
   const totalBonusPoints = data?.predictions.reduce((s, p) => s + (p.points ?? 0), 0) ?? 0
   const hasPoints = data?.predictions.some((p) => p.points !== null)
+
+  // Выбывшие команды — зачёркиваем в таблице прогнозов участников
+  const eliminated = new Set(data?.eliminatedTeams ?? [])
+  const renderTeam = (team: string) => (
+    <span
+      key={team}
+      className={`inline-flex items-center gap-1 ${eliminated.has(team) ? "line-through text-gray-500 opacity-70" : ""}`}
+      title={eliminated.has(team) ? `${team} выбыла — очков не принесёт` : undefined}
+    >
+      {teamFlag(team)} {team}
+    </span>
+  )
 
   return (
     <div className="max-w-4xl mx-auto space-y-8">
@@ -350,16 +363,16 @@ export default function BonusPage() {
                       <td className="px-4 py-3 text-gray-300">
                         {!hasPredictions
                           ? <span className="text-gray-500 italic">не заполнил</span>
-                          : semis.map((p) => `${teamFlag(p.team)} ${p.team}`).join("  ")}
+                          : <div className="flex flex-wrap gap-x-3 gap-y-1">{semis.map((p) => renderTeam(p.team))}</div>}
                       </td>
                       <td className="px-4 py-3 text-gray-300">
                         {fins.length > 0
-                          ? fins.map((p) => `${teamFlag(p.team)} ${p.team}`).join("  ")
+                          ? <div className="flex flex-wrap gap-x-3 gap-y-1">{fins.map((p) => renderTeam(p.team))}</div>
                           : <span className="text-gray-600">—</span>}
                       </td>
                       <td className="px-4 py-3 text-gray-300">
                         {champ
-                          ? `${teamFlag(champ.team)} ${champ.team}`
+                          ? renderTeam(champ.team)
                           : <span className="text-gray-600">—</span>}
                       </td>
                       <td className="px-4 py-3 text-right font-medium">

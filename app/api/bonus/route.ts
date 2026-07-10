@@ -30,6 +30,27 @@ export async function GET() {
     ])
   ).sort()
 
+  // Выбывшие команды: проиграли матч на вылет или не вышли из группы.
+  // Нужны, чтобы в таблице прогнозов зачёркивать пики, которые уже не дадут очков.
+  const PLAYOFF_STAGES = ["ROUND_OF_32", "R16", "QUARTERFINAL", "SEMIFINAL", "THIRD_PLACE", "FINAL"]
+  const playoffMatches = await prisma.match.findMany({
+    where: { stage: { in: PLAYOFF_STAGES as never } },
+    select: { homeTeam: true, awayTeam: true, winner: true, status: true },
+  })
+  const playoffTeams = new Set<string>()
+  const losers = new Set<string>()
+  for (const m of playoffMatches) {
+    playoffTeams.add(m.homeTeam)
+    playoffTeams.add(m.awayTeam)
+    if (m.status === "FINISHED" && m.winner) {
+      losers.add(m.winner === m.homeTeam ? m.awayTeam : m.homeTeam)
+    }
+  }
+  const knockoutStarted = playoffMatches.length > 0
+  const eliminatedTeams = allTeams.filter(
+    (t) => losers.has(t) || (knockoutStarted && !playoffTeams.has(t))
+  )
+
   const globallyLocked = firstMatch ? new Date() >= new Date(firstMatch.kickoff) : false
   const user = await prisma.user.findUnique({
     where: { id: session.user.id },
@@ -40,7 +61,7 @@ export async function GET() {
     : false
   const locked = globallyLocked && !personallyUnlocked
 
-  return NextResponse.json({ predictions, teams: allTeams, locked, currentUserId: session.user.id })
+  return NextResponse.json({ predictions, teams: allTeams, eliminatedTeams, locked, currentUserId: session.user.id })
 }
 
 // Saves bonus predictions (only before the first match kicks off)
