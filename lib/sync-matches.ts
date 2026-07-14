@@ -193,14 +193,37 @@ async function recalculateBonusPoints() {
     ))
   }
 
+  // Финалисты: победители УЖЕ сыгранных полуфиналов (не ждём появления матча FINAL,
+  // иначе +20 не начисляется, пока не доиграют оба полуфинала).
   const finalMatch = await prisma.match.findFirst({ where: { stage: "FINAL" } })
+  const finalists = new Set(
+    semifinalMatches
+      .filter((m) => m.status === "FINISHED" && m.winner)
+      .map((m) => m.winner as string)
+  )
   if (finalMatch) {
-    const finalists = new Set([finalMatch.homeTeam, finalMatch.awayTeam])
+    finalists.add(finalMatch.homeTeam)
+    finalists.add(finalMatch.awayTeam)
+  }
+  // Команды из ещё не сыгранных полуфиналов — судьба не решена, очки не проставляем (null).
+  const pendingFinalists = new Set(
+    semifinalMatches
+      .filter((m) => m.status !== "FINISHED")
+      .flatMap((m) => [m.homeTeam, m.awayTeam])
+  )
+
+  if (finalists.size > 0) {
     const finalistPreds = await prisma.bonusPrediction.findMany({ where: { type: "FINALIST" } })
     await Promise.all(finalistPreds.map(pred =>
       prisma.bonusPrediction.update({
         where: { id: pred.id },
-        data: { points: finalists.has(pred.team) ? 20 : 0 },
+        data: {
+          points: finalists.has(pred.team)
+            ? 20
+            : pendingFinalists.has(pred.team)
+            ? null
+            : 0,
+        },
       })
     ))
   }
