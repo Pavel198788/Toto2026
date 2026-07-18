@@ -333,9 +333,9 @@ export default function BonusPage() {
               <thead>
                 <tr className="border-b border-gray-800 bg-gray-900/80">
                   <th className="px-4 py-3 font-semibold text-gray-300 whitespace-nowrap">Участник</th>
-                  <th className="px-4 py-3 font-semibold text-gray-300 whitespace-nowrap">🏅 Полуфиналисты (+8)</th>
-                  <th className="px-4 py-3 font-semibold text-gray-300 whitespace-nowrap">🥈 Финалисты (+15)</th>
-                  <th className="px-4 py-3 font-semibold text-gray-300 whitespace-nowrap">🏆 Чемпион (+30)</th>
+                  <th className="px-4 py-3 font-semibold text-gray-300 whitespace-nowrap">🏅 Полуфиналисты (+10)</th>
+                  <th className="px-4 py-3 font-semibold text-gray-300 whitespace-nowrap">🥈 Финалисты (+20)</th>
+                  <th className="px-4 py-3 font-semibold text-gray-300 whitespace-nowrap">🏆 Чемпион (+40)</th>
                   <th className="px-4 py-3 font-semibold text-gray-300 whitespace-nowrap text-right">Очки</th>
                 </tr>
               </thead>
